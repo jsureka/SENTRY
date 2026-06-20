@@ -1,0 +1,19 @@
+# Large fine-tuned model weights (~965M; regenerate via training, kept on disk)
+/models/*.bin
+# FAISS datastores (~254M; rebuildable from model + training set on a GPU)
+results/**/datastore/
+# Saved-model checkpoints from fine-tuning
+saved_models/
+**/checkpoint-best-acc/
+
+# Redundant dataset archives (extracted *.jsonl/*.txt are the source of truth)
+*.zip
+
+# Python caches
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS cruft
+.DS_Store
+**/__MACOSX/

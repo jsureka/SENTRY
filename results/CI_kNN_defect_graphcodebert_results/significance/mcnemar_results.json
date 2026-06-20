@@ -1,0 +1,39 @@
+{
+  "B1_model_only_vs_B3_calibrated": {
+    "chi2": 0.0,
+    "p_value": 1.0,
+    "b": 0,
+    "c": 0,
+    "significant": false
+  },
+  "B1_model_only_vs_B4_knn": {
+    "method_a": "B1_model_only",
+    "method_b": "B4_knn",
+    "b_a_right_b_wrong": 30,
+    "c_a_wrong_b_right": 45,
+    "chi2": 2.6133333333333333,
+    "p_value": 0.10596880912720208,
+    "significant_at_0.05": false,
+    "significant_at_0.01": false
+  },
+  "B1_model_only_vs_B5_protoknn": {
+    "method_a": "B1_model_only",
+    "method_b": "B5_protoknn",
+    "b_a_right_b_wrong": 107,
+    "c_a_wrong_b_right": 82,
+    "chi2": 3.0476190476190474,
+    "p_value": 0.0808555983700523,
+    "significant_at_0.05": false,
+    "significant_at_0.01": false
+  },
+  "B1_model_only_vs_M1_gated_knn": {
+    "method_a": "B1_model_only",
+    "method_b": "M1_gated_knn",
+    "b_a_right_b_wrong": 30,
+    "c_a_wrong_b_right": 45,
+    "chi2": 2.6133333333333333,
+    "p_value": 0.10596880912720208,
+    "significant_at_0.05": false,
+    "significant_at_0.01": false
+  }
+}

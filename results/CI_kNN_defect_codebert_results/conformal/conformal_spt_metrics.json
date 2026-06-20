@@ -1,0 +1,50 @@
+{
+  "0": {
+    "spt_level": 0,
+    "alpha": 0.05,
+    "method": "raps",
+    "q_hat": 0.9622337996927052,
+    "marginal_coverage": 0.986989946777055,
+    "avg_set_size": 2.7940567711413364,
+    "singleton_rate": 0.0,
+    "empty_rate": 0.0,
+    "point_accuracy": 0.8248078060319338,
+    "n_samples": 6764
+  },
+  "1": {
+    "spt_level": 1,
+    "alpha": 0.05,
+    "method": "raps",
+    "q_hat": 0.9622337996927052,
+    "marginal_coverage": 0.9844766410408042,
+    "avg_set_size": 2.7899172087522177,
+    "singleton_rate": 0.0,
+    "empty_rate": 0.0,
+    "point_accuracy": 0.8091366055588409,
+    "n_samples": 6764
+  },
+  "2": {
+    "spt_level": 2,
+    "alpha": 0.05,
+    "method": "raps",
+    "q_hat": 0.9622337996927052,
+    "marginal_coverage": 0.9815198107628622,
+    "avg_set_size": 2.787699586043761,
+    "singleton_rate": 0.0,
+    "empty_rate": 0.0,
+    "point_accuracy": 0.7912477823772915,
+    "n_samples": 6764
+  },
+  "3": {
+    "spt_level": 3,
+    "alpha": 0.05,
+    "method": "raps",
+    "q_hat": 0.9622337996927052,
+    "marginal_coverage": 0.9781194559432289,
+    "avg_set_size": 2.7884387936132464,
+    "singleton_rate": 0.0,
+    "empty_rate": 0.0,
+    "point_accuracy": 0.780307510348906,
+    "n_samples": 6764
+  }
+}

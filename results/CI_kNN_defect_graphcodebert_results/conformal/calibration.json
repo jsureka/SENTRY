@@ -1,0 +1,10 @@
+{
+  "alpha": 0.05,
+  "method": "raps",
+  "raps_lambda": 0.1,
+  "raps_k_reg": 2,
+  "q_hat": 0.9440659995651108,
+  "n_calib": 5411,
+  "num_classes": 4,
+  "calibrated": true
+}
