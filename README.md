@@ -23,7 +23,7 @@ At inference time only, for any fine-tuned classifier:
 3. **Split conformal prediction (RAPS)** — distribution-free prediction sets whose coverage
    guarantee holds under semantic-preserving transformations (SPTs).
 
-## Results (honest)
+## Results
 
 - **Defect prediction (CodeChef, 4-class) — works.** kNN gives a small but **statistically
   significant** accuracy gain over the base model (McNemar p < 1e-12 CodeBERT, p < 1e-7
