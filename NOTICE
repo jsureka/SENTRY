@@ -1,0 +1,16 @@
+SENTRY — third-party content notice
+
+The MIT License (see LICENSE) covers SENTRY's own code: the kNN-Prediction/
+pipeline, aggregate.py, and the writeup/ documents.
+
+The following derive from upstream projects and remain under their respective
+licenses; they are included here for reproducibility:
+
+- Datasets: Devign (vulnerability detection) and CodeChef (defect prediction),
+  as packaged by CodeXGLUE.
+- Base task code under Defect-Prediction/ and Vulnerability-Detection/
+  (run.py, model.py, evaluator/) derives from CodeXGLUE and from CodeImprove
+  (Rathnasuriya et al., ICSE 2025; arXiv:2501.15804).
+
+Please consult those projects for their licensing terms before redistributing
+the datasets or base task code.

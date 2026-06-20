@@ -19,11 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-NOTE ON THIRD-PARTY CONTENT: The MIT license above covers SENTRY's own code
-(the kNN-Prediction/ pipeline, aggregation, and writeup). Datasets (Devign,
-CodeChef) and the base task code under Defect-Prediction/ and
-Vulnerability-Detection/ derive from CodeXGLUE and CodeImprove and remain under
-their respective upstream licenses. See README for attribution.
