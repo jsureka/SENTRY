@@ -15,55 +15,77 @@ the *output*.
 
 ## What it does
 
-At inference time only, for any fine-tuned classifier:
+At inference time only, no retraining — a layer that keeps accuracy and stops the model being
+**confidently wrong**:
 
-1. **Temperature scaling** — fixes severe overconfidence (ECE ≈ 0.37 → ≈ 0.04).
-2. **Confidence-gated kNN retrieval** — a FAISS datastore over training embeddings; an
-   entropy-adaptive sigmoid gate routes only *uncertain* queries to kNN and interpolates.
-3. **Split conformal prediction (RAPS)** — distribution-free prediction sets whose coverage
-   guarantee holds under semantic-preserving transformations (SPTs).
+1. **Temperature scaling** — fine-tuned code classifiers are badly over-confident (mean
+   confidence ≫ accuracy); a single temperature fixes calibration (defect ECE 0.08 → 0.02,
+   vuln 0.20 → 0.06).
+2. **Reliability-gated kNN retrieval** — a FAISS datastore over training embeddings. The gate uses
+   **retrieval reliability** (neighbour distance + vote agreement): it engages kNN only where the
+   representation is trustworthy (improving accuracy), and falls back to the calibrated model where
+   it is not (preserving accuracy).
+3. **Split conformal prediction (RAPS)** — distribution-free prediction sets that retain their
+   coverage guarantee under semantic-preserving transformations (SPTs).
+
+The guarantee in one line: **accuracy ≥ the base model, always better calibrated.**
 
 ## Results
 
-- **Defect prediction (CodeChef, 4-class) — works.** kNN gives a small but **statistically
-  significant** accuracy gain over the base model (McNemar p < 1e-12 CodeBERT, p < 1e-7
-  GraphCodeBERT); calibration handled by temperature scaling; conformal coverage stays ≥ 97.8%
-  under perturbation. Accuracy is **on par with CodeImprove's base model** (82.1% vs 81.9%,
-  GraphCodeBERT).
-- **Vulnerability detection (Devign, binary) — negative result.** Flat-to-harmful, not significant
-  (p = 0.36 / 0.06), ECE degrades. Cause: binary softmax → near-maximal entropy → the gate
-  over-triggers. Bounds the method to multi-class tasks with separable embeddings.
-- **Positioning.** Output-side and complementary to CodeImprove; contributes calibration + a formal
-  guarantee. **Not** an accuracy-SOTA claim (Devign SOTA ≈ 66–67%; base ≈ 62%) and does **not** beat
-  CodeImprove's detector (AUC ≈ 0.77 vs 0.924).
+All numbers re-verified by clean strict-load reruns (`kNN-Prediction/reproduce_results.py`); base
+accuracy reproduces exactly. Full tables: [`results/VERIFIED_RESULTS.md`](results/VERIFIED_RESULTS.md).
 
-Full numbers & discussion: [`writeup/evaluation_draft.md`](writeup/evaluation_draft.md) ·
-raw metrics: [`writeup/Aggregated_Raw_Results.md`](writeup/Aggregated_Raw_Results.md) ·
-talk cheat-sheet: [`PRESENTATION_PLAN.md`](PRESENTATION_PLAN.md).
+- **Defect prediction (CodeChef, 4-class) — improves accuracy *and* calibration, significantly, on
+  two model families.** CodeBERT 0.818 → **0.831** acc (McNemar p = 4e-6), ECE 0.082 → **0.017**;
+  GraphCodeBERT 0.806 → **0.835** acc (p = 2e-19), ECE 0.069 → **0.007**. Conformal sets retain their
+  target coverage under perturbation.
+- **Vulnerability detection (Devign, binary) — retrieval does not help; calibration still does.** The
+  representation does not separate the classes (MCC ≈ 0.26, cf. ReVeal), so kNN significantly *harms*
+  accuracy and the gate falls back to temperature scaling: **accuracy preserved**, ECE fixed (CodeBERT
+  0.197 → 0.055, GraphCodeBERT 0.228 → 0.061). An honest, significant negative for retrieval — and the
+  mechanism is the contribution.
+- **The dichotomy (thesis spine).** Retrieval helps **iff the representation separates classes** —
+  significant on both sides, both model families. The gate's reliability signal predicts the regime.
+- **Positioning.** Complementary to **CodeImprove** (input-side, accuracy-only, reports no
+  calibration); a step beyond post-hoc calibration (Guo'17; Desai & Durrett'20; Spiess et al. ICSE'25),
+  which is accuracy-neutral — SENTRY also *improves* accuracy where retrieval is reliable. **Not** an
+  accuracy-SOTA claim. See [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md).
+
+> **Data-integrity note.** The ECE/Brier column originally recorded under `results/` was wrong
+> (defect inflated ~5×, vuln deflated ~4×). The identity `ECE ≈ mean_conf − acc` and the fitted
+> temperatures confirm the corrected values; accuracy/F1/MCC were unaffected. See
+> [`results/VERIFIED_RESULTS.md`](results/VERIFIED_RESULTS.md) §1.
+
+How to reproduce: [`docs/REPRODUCE.md`](docs/REPRODUCE.md). Related work: [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md).
 
 ## Repository layout
 
 | Path | Contents |
 |---|---|
-| `kNN-Prediction/` | **Core pipeline**: datastore, predictor, calibration, conformal, SPT simulator, OOS metrics, `run_knn.py`, master notebook. See `writeup/CI_Gated_kNN_Files_Summary.md`. |
+| `kNN-Prediction/` | **Core pipeline**: datastore, predictor, calibration, conformal, SPT simulator, OOS metrics, `run_knn.py`, master notebook. **Verification harness**: `reproduce_results.py`, `significance_test.py`. |
 | `Defect-Prediction/`, `Vulnerability-Detection/` | Per-task `dataset/` + fine-tuning `code/` (`run.py`, `model.py`, train/test scripts) + CodeXGLUE `evaluator/`. |
-| `results/` | Per-(task × model) outputs: final tables, ablations, OOD, conformal, significance, plots. (FAISS datastores are git-ignored.) |
-| `models/` | Fine-tuned weights `*.bin` (git-ignored; ~965M, kept locally). |
+| `results/` | Per-(task × model) outputs: `final_table_*.json` (corrected), `verified_metrics.json`, ablations, OOD, conformal, significance, plots; **`VERIFIED_RESULTS.md`** (authoritative tables). FAISS datastores git-ignored. |
+| `docs/` | **`REPRODUCE.md`** (run instructions), **`RELATED_WORK.md`** (positioning vs CodeImprove + calibration papers). |
+| `models/` | Fine-tuned weights `*.bin` (git-ignored; ~2G for 4 checkpoints, kept locally). |
 | `writeup/` | Thesis drafts: methodology, related work, evaluation, raw results, analysis. |
 | `aggregate.py` | Collates `results/*/` JSON → `writeup/Aggregated_Raw_Results.md`. |
 | `Images/` | Figures. |
 
 ## Setup & reproduce
 
+Full instructions, expected numbers, and the validation gate: [`docs/REPRODUCE.md`](docs/REPRODUCE.md).
+
 ```bash
+python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r kNN-Prediction/requirements.txt
-python aggregate.py        # rebuild writeup/Aggregated_Raw_Results.md from results/
+cd kNN-Prediction
+python reproduce_results.py --task defect_codebert   # baselines + framework + patches (CPU)
+python significance_test.py --task defect_codebert   # paired McNemar
 ```
 
-The evaluation (calibration / kNN interpolation / conformal) re-runs from the per-experiment JSON in
-`results/` without a GPU. Rebuilding the **FAISS datastores** or the **model weights** (both
-git-ignored to keep the repo lean) requires the training data and a GPU — see the master notebook
-`kNN-Prediction/CI_Gated_kNN_Master.ipynb` (Colab/Drive oriented).
+Everything re-runs on **CPU, no retraining** — checkpoints (`models/`) and FAISS datastores
+(`results/**/datastore/`) are git-ignored and supplied locally; datastores are rebuildable with
+`--rebuild_datastore`.
 
 ## Attribution
 

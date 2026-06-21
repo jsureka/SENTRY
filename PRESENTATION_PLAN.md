@@ -1,5 +1,13 @@
 # CI-Gated kNN — Results & Discussion Plan (1-week sprint)
 
+> ⚠️ **SUPERSEDED (2026-06-22).** The numbers below predate the data-integrity correction:
+> the recorded ECE column was wrong (defect inflated ~5×, vuln deflated ~4×) and the McNemar
+> p-values were overstated. **Use [`results/VERIFIED_RESULTS.md`](results/VERIFIED_RESULTS.md)
+> and the rebuilt slide.** Corrected story: defect improves accuracy *and* calibration
+> (McNemar p=4e-6 codebert, p=2e-19 graphcodebert); vuln = retrieval can't help (representation
+> doesn't separate, MCC≈0.26), so temperature scaling alone fixes calibration with accuracy
+> preserved. Kept for historical context only.
+
 *Prepared as research-guide triage. Read top to bottom. The numbers below are pulled
 directly from `Aggregated_Raw_Results.md` and the `*_results/` JSON — nothing invented.*
 

@@ -21,7 +21,7 @@ class KNNPredictor:
     
     def __init__(self, datastore, num_classes=4, k=8, lambda_val=0.3,
                  knn_temperature=10.0, voting='distance_weighted',
-                 confidence_guard_threshold=None):
+                 confidence_guard_threshold=None, class_priors=None):
         """
         Args:
             datastore: KNNDatastore instance (already built or loaded)
@@ -43,6 +43,12 @@ class KNNPredictor:
         self.voting = voting
         self.confidence_guard_threshold = confidence_guard_threshold
 
+        # P3: optional class-prior correction for imbalanced datastores.
+        # Divides kNN vote mass by class frequency, then renormalizes —
+        # counteracts majority-class domination in the neighbor set.
+        self.class_priors = (np.asarray(class_priors, dtype=np.float64)
+                             if class_priors is not None else None)
+
         assert voting in ['uniform', 'distance_weighted', 'threshold_filtered'], \
             f"Unknown voting strategy: {voting}"
     
@@ -59,7 +65,16 @@ class KNNPredictor:
         """
         n_queries = distances.shape[0]
         knn_probs = np.zeros((n_queries, self.num_classes))
-        
+
+        # P1: resolve temperature. 'auto' scales to the per-row distance spread.
+        # Fixes the dead-weighting bug: embeddings are L2-normalized so FAISS
+        # returns squared-L2 ∈ [0,4]; the old fixed T=10 made softmax(-d/T)
+        # weights nearly uniform, silently disabling distance weighting.
+        if isinstance(self.knn_temperature, str) and self.knn_temperature == 'auto':
+            T = max(float(np.mean(np.std(distances, axis=1))), 1e-3)
+        else:
+            T = max(float(self.knn_temperature), 1e-6)
+
         if self.voting == 'uniform':
             # Each neighbor gets equal vote
             for i in range(n_queries):
@@ -77,7 +92,7 @@ class KNNPredictor:
         elif self.voting == 'distance_weighted':
             # Weight by softmax(-distance / temperature)
             # Smaller distance → higher weight
-            weights = softmax(-distances / self.knn_temperature, axis=1)
+            weights = softmax(-distances / T, axis=1)
             for i in range(n_queries):
                 for j in range(self.k):
                     label = neighbor_labels[i, j]
@@ -100,7 +115,7 @@ class KNNPredictor:
                 
                 filtered_dists = distances[i][mask]
                 filtered_labels = neighbor_labels[i][mask]
-                weights = softmax(-filtered_dists / self.knn_temperature)
+                weights = softmax(-filtered_dists / T)
                 
                 for j, (label, w) in enumerate(zip(filtered_labels, weights)):
                     if label < self.num_classes:
@@ -112,8 +127,14 @@ class KNNPredictor:
                 else:
                     knn_probs[i] = 1.0 / self.num_classes
         
+        # P3: class-prior correction (renormalize after dividing by frequency).
+        if self.class_priors is not None:
+            knn_probs = knn_probs / self.class_priors.reshape(1, -1)
+            rs = knn_probs.sum(axis=1, keepdims=True)
+            knn_probs = knn_probs / np.where(rs > 0, rs, 1.0)
+
         return knn_probs
-    
+
     def predict(self, query_embeddings, model_probs,
                 uncertainty_gated=False, calibrated_entropy=None,
                 gate_a=1.0, gate_b=-0.5):
@@ -149,6 +170,15 @@ class KNNPredictor:
         # Compute kNN probabilities
         knn_probs = self.compute_knn_probs(distances, neighbor_labels)
 
+        # P2: retrieval-based uncertainty signals (cheap, always computed).
+        #   mean_neighbor_dist: high → neighbors far → OOD-ish → abstain
+        #   vote_agreement:     low  → neighbors split → unreliable kNN
+        #   reliability:        model confidence gated by neighbor agreement,
+        #                       a selective-prediction score independent of entropy
+        mean_neighbor_dist = distances.mean(axis=1)
+        vote_agreement = knn_probs.max(axis=1)
+        reliability = model_probs.max(axis=1) * vote_agreement
+
         n = len(model_probs)
 
         if uncertainty_gated and calibrated_entropy is not None:
@@ -182,6 +212,9 @@ class KNNPredictor:
             'neighbor_ids': neighbor_ids,
             'n_guarded': n_guarded,
             'guard_ratio': n_guarded / n,
+            'mean_neighbor_dist': mean_neighbor_dist,
+            'vote_agreement': vote_agreement,
+            'reliability': reliability,
         }
 
         return final_probs, predictions, knn_probs, details
