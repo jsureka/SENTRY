@@ -1,0 +1,72 @@
+<svg viewBox="0 0 1060 440" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 z" fill="#1b2a32"/>
+    </marker>
+    <style>
+      .box{fill:#f4f7f8;stroke:#1b2a32;stroke-width:1.4;rx:8;}
+      .accent{fill:#e8f3f4;stroke:#0e7c86;stroke-width:1.6;}
+      .gate{fill:#fbf4e8;stroke:#b9842b;stroke-width:1.6;}
+      .t{fill:#1b2a32;font-size:13px;}
+      .ti{fill:#1b2a32;font-size:13px;font-weight:bold;}
+      .s{fill:#54636b;font-size:11px;}
+      .e{stroke:#1b2a32;stroke-width:1.4;fill:none;marker-end:url(#arr);}
+    </style>
+  </defs>
+
+  <text x="530" y="26" text-anchor="middle" class="ti" font-size="15">SENTRY — a training-free, inference-only reliability layer</text>
+  <text x="530" y="44" text-anchor="middle" class="s">no retraining; consumes a frozen fine-tuned classifier's logits and [CLS] embedding</text>
+
+  <!-- input -->
+  <rect class="box" x="24" y="190" width="110" height="60" rx="8"/>
+  <text x="79" y="216" text-anchor="middle" class="t">code</text>
+  <text x="79" y="234" text-anchor="middle" class="t">snippet</text>
+
+  <!-- encoder -->
+  <rect class="box" x="170" y="180" width="170" height="80" rx="8"/>
+  <text x="255" y="208" text-anchor="middle" class="ti">frozen encoder</text>
+  <text x="255" y="228" text-anchor="middle" class="s">CodeBERT /</text>
+  <text x="255" y="244" text-anchor="middle" class="s">GraphCodeBERT</text>
+
+  <!-- temperature scaling (top stream) -->
+  <rect class="accent" x="400" y="96" width="180" height="64" rx="8"/>
+  <text x="490" y="122" text-anchor="middle" class="ti">temperature scaling</text>
+  <text x="490" y="140" text-anchor="middle" class="s">calibrated p_model = softmax(z / T*)</text>
+
+  <!-- datastore (bottom stream) -->
+  <rect class="accent" x="400" y="282" width="180" height="64" rx="8"/>
+  <text x="490" y="308" text-anchor="middle" class="ti">FAISS datastore</text>
+  <text x="490" y="326" text-anchor="middle" class="s">k-NN over train embeddings</text>
+
+  <!-- reliability gate -->
+  <rect class="gate" x="630" y="150" width="200" height="150" rx="10"/>
+  <text x="730" y="176" text-anchor="middle" class="ti">reliability gate</text>
+  <text x="730" y="198" text-anchor="middle" class="s">reliability r = g(neighbour</text>
+  <text x="730" y="214" text-anchor="middle" class="s">distance, vote agreement)</text>
+  <text x="730" y="240" text-anchor="middle" class="t">p = λ·p_model + (1−λ)·p_kNN</text>
+  <text x="730" y="262" text-anchor="middle" class="s">λ→1 when retrieval unreliable</text>
+  <text x="730" y="278" text-anchor="middle" class="s">(fall back to calibrated model)</text>
+
+  <!-- conformal -->
+  <rect class="box" x="884" y="150" width="150" height="74" rx="8"/>
+  <text x="959" y="180" text-anchor="middle" class="ti">conformal</text>
+  <text x="959" y="198" text-anchor="middle" class="s">RAPS sets,</text>
+  <text x="959" y="214" text-anchor="middle" class="s">coverage ≥ 1−α</text>
+
+  <!-- output -->
+  <rect class="box" x="884" y="250" width="150" height="74" rx="8"/>
+  <text x="959" y="280" text-anchor="middle" class="ti">decision</text>
+  <text x="959" y="298" text-anchor="middle" class="s">calibrated label</text>
+  <text x="959" y="314" text-anchor="middle" class="s">+ abstention</text>
+
+  <!-- edges -->
+  <line class="e" x1="134" y1="220" x2="166" y2="220"/>
+  <path class="e" d="M340,205 C370,205 372,128 396,128"/>
+  <text x="360" y="150" class="s">logits z</text>
+  <path class="e" d="M340,235 C370,235 372,314 396,314"/>
+  <text x="350" y="300" class="s">[CLS] emb.</text>
+  <path class="e" d="M580,128 C606,128 606,200 626,200"/>
+  <path class="e" d="M580,314 C606,314 606,250 626,250"/>
+  <line class="e" x1="830" y1="200" x2="880" y2="190"/>
+  <line class="e" x1="830" y1="250" x2="880" y2="280"/>
+</svg>

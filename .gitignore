@@ -26,3 +26,6 @@ kNN-Prediction/patch_results_*.json
 # Slide builder deps / caches
 presentation/node_modules/
 presentation/_ql/
+
+# Figure-build log
+paper/figures/*.log
