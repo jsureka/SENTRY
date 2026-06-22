@@ -3,10 +3,10 @@ message: "If you use SENTRY, please cite this repository."
 title: "SENTRY: A Training-Free Reliability Layer for Code Classifiers"
 abstract: >-
   SENTRY is a post-hoc, training-free reliability layer for fine-tuned code
-  classifiers (CodeBERT / GraphCodeBERT). It combines temperature scaling,
-  confidence-gated kNN retrieval (the CI-Gated kNN method), and split conformal
-  prediction to remove overconfidence and provide distribution-free coverage
-  guarantees that hold under semantic-preserving code transformations.
+  classifiers (CodeBERT / GraphCodeBERT). It combines temperature scaling with
+  reliability-gated kNN retrieval to remove overconfidence and improve accuracy
+  where the representation is reliable; the gate's reliability signal also drives
+  selective abstention.
 authors:
   - family-names: Sureka
     given-names: Jitesh
@@ -16,7 +16,7 @@ date-released: 2026-06-20
 keywords:
   - code intelligence
   - uncertainty quantification
-  - conformal prediction
+  - selective prediction
   - calibration
   - nearest-neighbor retrieval
   - defect prediction

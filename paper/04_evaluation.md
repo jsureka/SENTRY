@@ -5,8 +5,8 @@
 - **RQ1 (Calibration).** Are fine-tuned code classifiers miscalibrated, and does the layer fix it?
 - **RQ2 (Accuracy).** Does reliability-gated retrieval change accuracy, and is the change significant?
 - **RQ3 (Where it works).** What determines whether retrieval helps or hurts?
-- **RQ4 (Selective prediction & coverage).** Do the reliability signal and conformal sets support
-  trustworthy abstention?
+- **RQ4 (Selective prediction).** Does the retrieval-reliability signal support trustworthy abstention,
+  and when does it beat the model's own confidence?
 
 ## 4.2 Experimental setup
 
@@ -20,7 +20,7 @@ and **GraphCodeBERT** (Guo et al., 2021) — giving a full $2\times2$ (task $\ti
 **Metrics.** Accuracy, macro-F1, and Matthews correlation coefficient (MCC) for predictive quality;
 **Expected Calibration Error** (ECE, 15 equal-width bins) and the multiclass **Brier score** for
 calibration; McNemar's test (continuity-corrected $\chi^2$ and exact binomial) for paired
-significance; conformal marginal coverage and set size.
+significance; and selective accuracy versus coverage for abstention.
 
 **Protocol and reproducibility.** All numbers are produced on CPU with no retraining by
 `kNN-Prediction/reproduce_results.py` and `significance_test.py`; the checkpoints load strict
@@ -118,15 +118,14 @@ sides and consistent across two model families — a single mechanism, two outco
 *Figure 5. Retrieval helps iff the representation separates classes. SENTRY's reliability gate reads
 this regime per-query (neighbour distance + agreement) and routes accordingly.*
 
-## 4.6 RQ4 — Selective prediction and conformal coverage
+## 4.6 RQ4 — Selective prediction
 
 The retrieval-reliability signal supports trustworthy abstention. On the separable defect task,
 ranking by reliability lets the model retain ≈0.94 accuracy at 50% coverage versus ≈0.83 at full
 coverage (Figure 6); on the non-separable vulnerability task the model's own calibrated confidence is
-the better abstention signal — again consistent with the dichotomy. The split-conformal RAPS wrapper
-attains its target marginal coverage on the multi-class defect task and retains coverage under
-semantic-preserving transformations; on binary vulnerability the prediction sets are trivial and the
-component is correspondingly uninformative.
+the better abstention signal — again consistent with the dichotomy of §4.5. The *choice* of abstention
+signal is therefore governed by the same representation-separability mechanism that governs whether
+retrieval helps, so a single quantity drives both the accuracy correction and the abstention rule.
 
 ![Figure 6: selective prediction](figures/fig_riskcoverage.png)
 

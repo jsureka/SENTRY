@@ -1,8 +1,5 @@
 # References
 
-Angelopoulos, A. N., Bates, S., Malik, J., & Jordan, M. I. (2021). *Uncertainty Sets for Image
-Classifiers using Conformal Prediction* (RAPS). ICLR 2021.
-
 Chakraborty, S., Krishna, R., Ding, Y., & Ray, B. (2021). *Deep Learning Based Vulnerability
 Detection: Are We There Yet?* IEEE Transactions on Software Engineering, 48(9). (ReVeal.)
 arXiv:2009.07235.
@@ -66,15 +63,10 @@ Robust Deep Learning.* arXiv:1803.04765.
 Rathnasuriya, A., et al. (2025). *CodeImprove: Program Adaptation for Deep Code Models.* ICSE 2025.
 arXiv:2501.15804.
 
-Romano, Y., Sesia, M., & Candès, E. (2020). *Classification with Valid and Adaptive Coverage* (APS).
-NeurIPS 2020.
-
 Spiess, C., et al. (2025). *Calibration and Correctness of Language Models for Code.* ICSE 2025.
 
 Steenhoek, B., Gao, H., & Le, W. (2024). *Dataflow Analysis-Inspired Deep Learning for Efficient
 Vulnerability Detection* (DeepDFA). ICSE 2024. arXiv:2212.08108.
-
-Vovk, V., Gammerman, A., & Shafer, G. (2005). *Algorithmic Learning in a Random World.* Springer.
 
 Zhou, Y., Liu, S., Siow, J., Du, X., & Liu, Y. (2019). *Devign: Effective Vulnerability Identification
 by Learning Comprehensive Program Semantics via Graph Neural Networks.* NeurIPS 2019.

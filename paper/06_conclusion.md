@@ -3,8 +3,9 @@
 Deployed code classifiers are judged on accuracy and trusted on confidence, yet their confidence is
 unreliable — they are often *confidently wrong*. We presented **SENTRY**, a training-free,
 inference-only reliability layer that wraps a frozen CodeBERT/GraphCodeBERT classifier with
-temperature scaling, reliability-gated k-nearest-neighbour retrieval, and split-conformal prediction
-sets, unified by a gate that trusts retrieval only when the representation is reliable. On defect
+temperature scaling and reliability-gated k-nearest-neighbour retrieval, unified by a gate that
+trusts retrieval only when the representation is reliable and that doubles as a selective-abstention
+signal. On defect
 prediction SENTRY improves accuracy by 1.3–2.9 points on two model families ($p\le4\times10^{-6}$)
 while cutting calibration error from 0.08 to 0.01–0.02; on vulnerability detection — where the
 representation does not separate the classes — it preserves accuracy and still reduces calibration

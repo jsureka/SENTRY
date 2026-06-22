@@ -2,8 +2,9 @@
 
 **Claim we are selling:** a *training-free, output-side reliability layer* that keeps a
 deployed code model's accuracy at-least-the-same while ensuring it is **not confidently
-wrong** — via calibration (temperature scaling), retrieval-gated prediction (kNN that
-engages only when the representation is reliable), and conformal abstention.
+wrong** — via calibration (temperature scaling) and retrieval-gated prediction (kNN that
+engages only when the representation is reliable), with the same reliability signal driving
+selective abstention.
 
 Two camps to compare against: (A) SE works that report **accuracy only** (no calibration),
 and (B) works that **do report calibration** (ECE/Brier).
@@ -14,7 +15,7 @@ and (B) works that **do report calibration** (ECE/Brier).
 
 | Work | Venue | Task / data | Optimizes | Reports ECE? | Accuracy effect | Training-free? | Abstention / sets? |
 |---|---|---|---|---|---|---|---|
-| **Ours (CI-Gated kNN)** | — | defect (CodeChef), vuln (Devign) | acc **and** calibration **and** selective | **Yes (+Brier)** | **↑ defect (sig), = vuln** | **Yes** | **Yes (conformal)** |
+| **Ours (SENTRY)** | — | defect (CodeChef), vuln (Devign) | acc **and** calibration **and** selective | **Yes (+Brier)** | **↑ defect (sig), = vuln** | **Yes** | **Yes (selective)** |
 | CodeImprove | ICSE'25 | defect, vuln | accuracy (input adaptation) | No | ↑ up to 8.78% | No (GA transforms) | OOD detect only (AUC .924) |
 | Devign | NeurIPS'19 | vuln | accuracy/F1 (GNN) | No | — | No | No |
 | ReVeal "Are We There Yet?" | TSE'21 | vuln | F1; *diagnoses* why DL vuln fails | No | — | n/a | No |
@@ -23,7 +24,7 @@ and (B) works that **do report calibration** (ECE/Brier).
 | Desai & Durrett | EMNLP'20 | NLI/paraphrase | calibration of BERT/RoBERTa | Yes | unchanged | Yes | No |
 | Spiess et al. | ICSE'25 | code generation (LLMs) | calibration/correctness | Yes | unchanged | Yes | No (reflection/rescale) |
 | JIT-Calibration | arXiv'25 (2504.12051) | JIT defect (QT/OpenStack) | calibration | Yes | unchanged | Yes | No |
-| Selective/Conformal CP | general ML | — | abstention + coverage | (calibrated sets) | trade coverage | Yes | Yes |
+| Selective prediction | general ML | — | abstention | — | trade coverage | Yes | Yes |
 
 **The empty cell that is our contribution:** no prior code-classification work occupies the
 row that does accuracy **+** calibration **+** abstention, training-free, on the same model.
@@ -95,8 +96,8 @@ natural next step, with the P2 evidence already supporting it.)
 > Spiess et al. ICSE'25; JIT-Calibration'25) that fixes ECE without touching accuracy, we
 > contribute a training-free output-side layer that **preserves or improves accuracy
 > (significantly on defect, p≤4e-6) while reducing ECE by 4–10×**, and adds retrieval-gated
-> selective prediction with conformal guarantees — the first such reliability layer for code
-> defect / vulnerability classification.
+> selective prediction — the first such reliability layer for code defect / vulnerability
+> classification.
 
 ### References
 - CodeImprove — arXiv:2501.15804, ICSE 2025
@@ -106,4 +107,3 @@ natural next step, with the P2 evidence already supporting it.)
 - "On the Calibration of Just-in-time Defect Prediction", arXiv:2504.12051, 2025
 - Chakraborty et al. (ReVeal), "Deep Learning based Vulnerability Detection: Are We There Yet?", TSE 2021
 - Fu & Tantithamthavorn, "LineVul", MSR 2022
-- Angelopoulos et al., "Uncertainty Sets for Image Classifiers using Conformal Prediction (RAPS)", ICLR 2021

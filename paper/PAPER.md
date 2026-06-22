@@ -7,10 +7,10 @@ vulnerability detectors, yet their predicted confidences are trusted blindly and
 badly miscalibrated: across four task–model settings we measure mean confidence exceeding accuracy
 by 8 to 23 points. We present **SENTRY**, a training-free, inference-only reliability layer that
 wraps a *frozen* classifier and is designed to keep its accuracy while ensuring it is not
-*confidently wrong*. SENTRY composes three post-hoc components — temperature scaling for
-calibration, reliability-gated k-nearest-neighbour retrieval over a datastore of training
-embeddings, and split-conformal prediction sets — unified by a gate that trusts retrieval only when
-the underlying representation is reliable. On 4-class defect prediction the gated retrieval improves
+*confidently wrong*. SENTRY composes two post-hoc components — temperature scaling for calibration
+and reliability-gated k-nearest-neighbour retrieval over a datastore of training embeddings —
+unified by a gate that trusts retrieval only when the underlying representation is reliable, and it
+exposes a retrieval-reliability signal for selective abstention. On 4-class defect prediction the gated retrieval improves
 accuracy by 1.3–2.9 points on two model families (McNemar $p=4\times10^{-6}$ and $2\times10^{-19}$)
 while cutting Expected Calibration Error from 0.08 to 0.01–0.02. On binary vulnerability detection,
 where vulnerable and safe code overlap in representation space, k-NN significantly *harms* accuracy;
@@ -38,9 +38,8 @@ correct only 61% of the time.
 
 The machine-learning community has tools for exactly this problem — temperature scaling for
 calibration (Guo et al., 2017), retrieval augmentation for cheap accuracy gains (Khandelwal et al.,
-2020), selective and conformal prediction for principled abstention (Geifman & El-Yaniv, 2019;
-Angelopoulos et al., 2021) — but they are seldom brought to bear on code classification, and never
-together on a frozen model. The closest software-engineering system, CodeImprove (Rathnasuriya et
+2020), and selective prediction for principled abstention (Geifman & El-Yaniv, 2019) — but they are
+seldom brought to bear on code classification, and never together on a frozen model. The closest software-engineering system, CodeImprove (Rathnasuriya et
 al., 2025), improves accuracy by adapting the model's *input*; it does not touch calibration.
 
 We ask a complementary, output-side question: **given a frozen, deployed code classifier, can a cheap
@@ -51,9 +50,9 @@ representation can be trusted, and falling back to a calibrated model otherwise.
 
 **Contributions.**
 
-1. **SENTRY**, a training-free, inference-only reliability layer composing temperature scaling,
-   reliability-gated and class-prior-corrected k-NN retrieval, and split-conformal RAPS sets over a
-   frozen CodeBERT/GraphCodeBERT classifier (§3).
+1. **SENTRY**, a training-free, inference-only reliability layer composing temperature scaling with
+   reliability-gated, class-prior-corrected k-NN retrieval over a frozen CodeBERT/GraphCodeBERT
+   classifier, exposing a retrieval-reliability signal for selective abstention (§3).
 2. A full $2\times2$ (task $\times$ model) evaluation showing the layer improves accuracy *and*
    calibration significantly on defect prediction (+1.3–2.9 pp, $p\le4\times10^{-6}$; ECE 0.08→0.01)
    and preserves accuracy while fixing calibration on vulnerability detection (ECE 0.20→0.06) (§4).
@@ -75,9 +74,8 @@ value is trustworthiness added on top of a comparable base, at no training cost.
 
 SENTRY sits at the intersection of four lines of research: pre-trained models for code
 classification, post-hoc calibration of neural classifiers, retrieval-augmented prediction, and
-selective / conformal prediction. We review each, then situate our work against the most closely
-related software-engineering systems — deep vulnerability detectors and input-side program
-adaptation.
+selective prediction. We review each, then situate our work against the most closely related
+software-engineering systems — deep vulnerability detectors and input-side program adaptation.
 
 ## 2.1 Pre-trained models for code classification
 
@@ -133,19 +131,17 @@ embeddings — but adds two things the original recipe lacks for our setting: a 
 that decides *when* retrieval should be trusted (rather than always interpolating), and an awareness
 that retrieval quality is bounded by how well the host representation separates the classes (§2.5).
 
-## 2.4 Selective prediction and conformal prediction
+## 2.4 Selective prediction
 
 A reliable deployed model should be able to *abstain*. Selective prediction, or classification with a
 reject option (El-Yaniv & Wiener, 2010; Geifman & El-Yaniv, 2017), trades coverage for accuracy by
 declining to predict on low-confidence inputs; SelectiveNet (Geifman & El-Yaniv, 2019) learns the
-reject head end-to-end. Conformal prediction (Vovk et al., 2005) instead returns *prediction sets*
-with a finite-sample, distribution-free coverage guarantee; Regularized Adaptive Prediction Sets
-(RAPS; Angelopoulos et al., 2021) produce small, adaptive sets and are especially effective with many
-classes. These frameworks are well developed in vision and NLP but are rarely applied to code
-defect / vulnerability classification. SENTRY brings both to bear: it exposes a **retrieval-reliability
-score** (neighbour distance and vote agreement) as a selective-prediction signal, and wraps the
-calibrated output in split-conformal RAPS sets whose coverage we verify under
-semantic-preserving program transformations.
+reject head end-to-end. Such methods are well developed in vision and NLP but rarely applied to code
+defect / vulnerability classification. SENTRY contributes a domain-specific abstention signal: beyond
+the model's own confidence, it exposes a **retrieval-reliability score** (neighbour distance and vote
+agreement) that is the better abstention criterion precisely on tasks where the representation
+separates the classes (§4.6) — tying selective prediction to the same mechanism that governs whether
+retrieval helps at all.
 
 ## 2.5 Deep vulnerability detection and its limits
 
@@ -186,11 +182,11 @@ final framework; the model's own confidence and the retrieval-reliability signal
 
 To our knowledge, no prior work on code defect / vulnerability classification occupies the cell that
 simultaneously (i) preserves or improves accuracy, (ii) corrects calibration, and (iii) offers
-selective prediction with a coverage guarantee, all **training-free** on a frozen model. Accuracy-only
-SE systems (CodeImprove, Devign, LineVul) ignore (ii)–(iii); post-hoc calibration (Guo et al., 2017;
-Desai & Durrett, 2020; Spiess et al., 2025) is accuracy-neutral and ignores (iii); selective /
-conformal methods supply (iii) in the abstract but are not instantiated for this domain. SENTRY fills
-that cell, and its gate makes the accuracy/abstention trade-off *adaptive* to whether the underlying
+principled selective abstention, all **training-free** on a frozen model. Accuracy-only SE systems
+(CodeImprove, Devign, LineVul) ignore (ii)–(iii); post-hoc calibration (Guo et al., 2017; Desai &
+Durrett, 2020; Spiess et al., 2025) is accuracy-neutral and ignores (iii); selective-prediction
+methods supply (iii) in the abstract but are not instantiated for this domain. SENTRY fills that
+cell, and its gate makes the accuracy/abstention trade-off *adaptive* to whether the underlying
 representation is trustworthy.
 
 
@@ -206,7 +202,8 @@ $p_{\text{model}}(x)=\mathrm{softmax}(z(x))$ and prediction $\hat{y}=\arg\max_c 
 We treat $f$ as **frozen**: SENTRY never updates its weights. Given only (i) the logits $z(x)$, (ii)
 the penultimate-layer `[CLS]` embedding $h(x)\in\mathbb{R}^{d}$, and (iii) read access to the training
 set, SENTRY produces a *reliability-enhanced* output — recalibrated probabilities, an optional
-retrieval correction, and a conformal prediction set — at **inference time only, with no retraining**.
+retrieval correction, and a reliability-based abstention signal — at **inference time only, with no
+retraining**.
 
 The design goal is a guarantee that is honest on every task:
 
@@ -219,8 +216,8 @@ where it is not. The architecture is shown in Figure 1.
 
 *Figure 1. SENTRY is a training-free, inference-only layer over a frozen encoder. Logits flow through
 temperature scaling; the `[CLS]` embedding queries a FAISS datastore of training embeddings. A
-reliability gate decides how much to trust retrieval and interpolates; the calibrated output is
-wrapped in a conformal prediction set with an abstention option.*
+reliability gate decides how much to trust retrieval and interpolates; the same reliability signal
+supports selective abstention on the calibrated output.*
 
 ## 3.2 Component 1 — Temperature scaling
 
@@ -276,22 +273,21 @@ retrieval stage can only *add* accuracy where it is reliable — it cannot drag 
 base model when the gate is respected. The blended distribution is re-calibrated with a second
 temperature so the interpolation does not re-introduce miscalibration.
 
-## 3.5 Component 4 — Conformal prediction
+## 3.5 Selective abstention
 
-Finally we wrap the calibrated output in **split-conformal Regularized Adaptive Prediction Sets**
-(RAPS; Angelopoulos et al., 2021). Using the validation split as the calibration set, we compute the
-RAPS non-conformity scores and the threshold $\hat{q}$ for a target miscoverage $\alpha$; at test time
-the prediction set $\mathcal{C}(x)=\{c : \text{cumulative regularised score} \le \hat{q}\}$ satisfies
-the marginal coverage guarantee $\Pr(y\in\mathcal{C}(x))\ge 1-\alpha$. We additionally evaluate
-coverage under **semantic-preserving transformations** (SPTs) of the test inputs to probe robustness
-of the guarantee to mild distribution shift. (On binary vulnerability detection, sets are trivially
-$\{0\},\{1\}$ or $\{0,1\}$; the conformal component is most informative on the multi-class task.)
+The reliability signal $r(x)$ of §3.4 is also the framework's abstention criterion. Ranking test
+inputs by $r(x)$ and declining to predict below a coverage-controlled threshold yields the standard
+selective-prediction trade-off (El-Yaniv & Wiener, 2010): accuracy on the retained inputs rises as
+coverage falls. Crucially, the *better* abstention signal is task-dependent and follows the same
+mechanism as retrieval itself — the retrieval-reliability score dominates the model's own confidence
+exactly on tasks where the representation separates the classes, and the model's confidence is
+preferable otherwise (§4.6).
 
 ## 3.6 Summary
 
 SENTRY is the composition: temperature scaling (always on, accuracy-preserving) → reliability-gated,
-class-prior-corrected k-NN (engages only when retrieval is reliable) → conformal set construction
-with abstention. Every component is post-hoc and training-free, and the gate is what turns three
+class-prior-corrected k-NN (engages only when retrieval is reliable) → reliability-based selective
+abstention. Both components are post-hoc and training-free, and the gate is what turns two
 independent tricks into a single framework with a defensible guarantee.
 
 
@@ -304,8 +300,8 @@ independent tricks into a single framework with a defensible guarantee.
 - **RQ1 (Calibration).** Are fine-tuned code classifiers miscalibrated, and does the layer fix it?
 - **RQ2 (Accuracy).** Does reliability-gated retrieval change accuracy, and is the change significant?
 - **RQ3 (Where it works).** What determines whether retrieval helps or hurts?
-- **RQ4 (Selective prediction & coverage).** Do the reliability signal and conformal sets support
-  trustworthy abstention?
+- **RQ4 (Selective prediction).** Does the retrieval-reliability signal support trustworthy abstention,
+  and when does it beat the model's own confidence?
 
 ## 4.2 Experimental setup
 
@@ -319,7 +315,7 @@ and **GraphCodeBERT** (Guo et al., 2021) — giving a full $2\times2$ (task $\ti
 **Metrics.** Accuracy, macro-F1, and Matthews correlation coefficient (MCC) for predictive quality;
 **Expected Calibration Error** (ECE, 15 equal-width bins) and the multiclass **Brier score** for
 calibration; McNemar's test (continuity-corrected $\chi^2$ and exact binomial) for paired
-significance; conformal marginal coverage and set size.
+significance; and selective accuracy versus coverage for abstention.
 
 **Protocol and reproducibility.** All numbers are produced on CPU with no retraining by
 `kNN-Prediction/reproduce_results.py` and `significance_test.py`; the checkpoints load strict
@@ -417,15 +413,14 @@ sides and consistent across two model families — a single mechanism, two outco
 *Figure 5. Retrieval helps iff the representation separates classes. SENTRY's reliability gate reads
 this regime per-query (neighbour distance + agreement) and routes accordingly.*
 
-## 4.6 RQ4 — Selective prediction and conformal coverage
+## 4.6 RQ4 — Selective prediction
 
 The retrieval-reliability signal supports trustworthy abstention. On the separable defect task,
 ranking by reliability lets the model retain ≈0.94 accuracy at 50% coverage versus ≈0.83 at full
 coverage (Figure 6); on the non-separable vulnerability task the model's own calibrated confidence is
-the better abstention signal — again consistent with the dichotomy. The split-conformal RAPS wrapper
-attains its target marginal coverage on the multi-class defect task and retains coverage under
-semantic-preserving transformations; on binary vulnerability the prediction sets are trivial and the
-component is correspondingly uninformative.
+the better abstention signal — again consistent with the dichotomy of §4.5. The *choice* of abstention
+signal is therefore governed by the same representation-separability mechanism that governs whether
+retrieval helps, so a single quantity drives both the accuracy correction and the abstention rule.
 
 ![Figure 6: selective prediction](figures/fig_riskcoverage.png)
 
@@ -517,8 +512,7 @@ SENTRY cannot make retrieval help on vulnerability detection, because the limita
 representation*, not the layer: when vulnerable and safe code overlap in embedding space (Chakraborty
 et al., 2021), no amount of post-hoc retrieval can recover a signal the encoder did not encode. The
 honest consequence is that on such tasks SENTRY contributes calibration and abstention but not
-accuracy. The conformal component is also uninformative on binary tasks, where prediction sets are
-trivial.
+accuracy.
 
 ## 5.4 Future work
 
@@ -539,8 +533,9 @@ languages, datasets, and encoder families would further test the separability me
 Deployed code classifiers are judged on accuracy and trusted on confidence, yet their confidence is
 unreliable — they are often *confidently wrong*. We presented **SENTRY**, a training-free,
 inference-only reliability layer that wraps a frozen CodeBERT/GraphCodeBERT classifier with
-temperature scaling, reliability-gated k-nearest-neighbour retrieval, and split-conformal prediction
-sets, unified by a gate that trusts retrieval only when the representation is reliable. On defect
+temperature scaling and reliability-gated k-nearest-neighbour retrieval, unified by a gate that
+trusts retrieval only when the representation is reliable and that doubles as a selective-abstention
+signal. On defect
 prediction SENTRY improves accuracy by 1.3–2.9 points on two model families ($p\le4\times10^{-6}$)
 while cutting calibration error from 0.08 to 0.01–0.02; on vulnerability detection — where the
 representation does not separate the classes — it preserves accuracy and still reduces calibration
@@ -558,9 +553,6 @@ figures, and tables are reproducible on CPU from the released harness.
 ---
 
 # References
-
-Angelopoulos, A. N., Bates, S., Malik, J., & Jordan, M. I. (2021). *Uncertainty Sets for Image
-Classifiers using Conformal Prediction* (RAPS). ICLR 2021.
 
 Chakraborty, S., Krishna, R., Ding, Y., & Ray, B. (2021). *Deep Learning Based Vulnerability
 Detection: Are We There Yet?* IEEE Transactions on Software Engineering, 48(9). (ReVeal.)
@@ -625,15 +617,10 @@ Robust Deep Learning.* arXiv:1803.04765.
 Rathnasuriya, A., et al. (2025). *CodeImprove: Program Adaptation for Deep Code Models.* ICSE 2025.
 arXiv:2501.15804.
 
-Romano, Y., Sesia, M., & Candès, E. (2020). *Classification with Valid and Adaptive Coverage* (APS).
-NeurIPS 2020.
-
 Spiess, C., et al. (2025). *Calibration and Correctness of Language Models for Code.* ICSE 2025.
 
 Steenhoek, B., Gao, H., & Le, W. (2024). *Dataflow Analysis-Inspired Deep Learning for Efficient
 Vulnerability Detection* (DeepDFA). ICSE 2024. arXiv:2212.08108.
-
-Vovk, V., Gammerman, A., & Shafer, G. (2005). *Algorithmic Learning in a Random World.* Springer.
 
 Zhou, Y., Liu, S., Siow, J., Du, X., & Liu, Y. (2019). *Devign: Effective Vulnerability Identification
 by Learning Comprehensive Program Semantics via Graph Neural Networks.* NeurIPS 2019.

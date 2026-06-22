@@ -11,9 +11,8 @@ correct only 61% of the time.
 
 The machine-learning community has tools for exactly this problem — temperature scaling for
 calibration (Guo et al., 2017), retrieval augmentation for cheap accuracy gains (Khandelwal et al.,
-2020), selective and conformal prediction for principled abstention (Geifman & El-Yaniv, 2019;
-Angelopoulos et al., 2021) — but they are seldom brought to bear on code classification, and never
-together on a frozen model. The closest software-engineering system, CodeImprove (Rathnasuriya et
+2020), and selective prediction for principled abstention (Geifman & El-Yaniv, 2019) — but they are
+seldom brought to bear on code classification, and never together on a frozen model. The closest software-engineering system, CodeImprove (Rathnasuriya et
 al., 2025), improves accuracy by adapting the model's *input*; it does not touch calibration.
 
 We ask a complementary, output-side question: **given a frozen, deployed code classifier, can a cheap
@@ -24,9 +23,9 @@ representation can be trusted, and falling back to a calibrated model otherwise.
 
 **Contributions.**
 
-1. **SENTRY**, a training-free, inference-only reliability layer composing temperature scaling,
-   reliability-gated and class-prior-corrected k-NN retrieval, and split-conformal RAPS sets over a
-   frozen CodeBERT/GraphCodeBERT classifier (§3).
+1. **SENTRY**, a training-free, inference-only reliability layer composing temperature scaling with
+   reliability-gated, class-prior-corrected k-NN retrieval over a frozen CodeBERT/GraphCodeBERT
+   classifier, exposing a retrieval-reliability signal for selective abstention (§3).
 2. A full $2\times2$ (task $\times$ model) evaluation showing the layer improves accuracy *and*
    calibration significantly on defect prediction (+1.3–2.9 pp, $p\le4\times10^{-6}$; ECE 0.08→0.01)
    and preserves accuracy while fixing calibration on vulnerability detection (ECE 0.20→0.06) (§4).

@@ -8,7 +8,8 @@ $p_{\text{model}}(x)=\mathrm{softmax}(z(x))$ and prediction $\hat{y}=\arg\max_c 
 We treat $f$ as **frozen**: SENTRY never updates its weights. Given only (i) the logits $z(x)$, (ii)
 the penultimate-layer `[CLS]` embedding $h(x)\in\mathbb{R}^{d}$, and (iii) read access to the training
 set, SENTRY produces a *reliability-enhanced* output — recalibrated probabilities, an optional
-retrieval correction, and a conformal prediction set — at **inference time only, with no retraining**.
+retrieval correction, and a reliability-based abstention signal — at **inference time only, with no
+retraining**.
 
 The design goal is a guarantee that is honest on every task:
 
@@ -21,8 +22,8 @@ where it is not. The architecture is shown in Figure 1.
 
 *Figure 1. SENTRY is a training-free, inference-only layer over a frozen encoder. Logits flow through
 temperature scaling; the `[CLS]` embedding queries a FAISS datastore of training embeddings. A
-reliability gate decides how much to trust retrieval and interpolates; the calibrated output is
-wrapped in a conformal prediction set with an abstention option.*
+reliability gate decides how much to trust retrieval and interpolates; the same reliability signal
+supports selective abstention on the calibrated output.*
 
 ## 3.2 Component 1 — Temperature scaling
 
@@ -78,20 +79,19 @@ retrieval stage can only *add* accuracy where it is reliable — it cannot drag 
 base model when the gate is respected. The blended distribution is re-calibrated with a second
 temperature so the interpolation does not re-introduce miscalibration.
 
-## 3.5 Component 4 — Conformal prediction
+## 3.5 Selective abstention
 
-Finally we wrap the calibrated output in **split-conformal Regularized Adaptive Prediction Sets**
-(RAPS; Angelopoulos et al., 2021). Using the validation split as the calibration set, we compute the
-RAPS non-conformity scores and the threshold $\hat{q}$ for a target miscoverage $\alpha$; at test time
-the prediction set $\mathcal{C}(x)=\{c : \text{cumulative regularised score} \le \hat{q}\}$ satisfies
-the marginal coverage guarantee $\Pr(y\in\mathcal{C}(x))\ge 1-\alpha$. We additionally evaluate
-coverage under **semantic-preserving transformations** (SPTs) of the test inputs to probe robustness
-of the guarantee to mild distribution shift. (On binary vulnerability detection, sets are trivially
-$\{0\},\{1\}$ or $\{0,1\}$; the conformal component is most informative on the multi-class task.)
+The reliability signal $r(x)$ of §3.4 is also the framework's abstention criterion. Ranking test
+inputs by $r(x)$ and declining to predict below a coverage-controlled threshold yields the standard
+selective-prediction trade-off (El-Yaniv & Wiener, 2010): accuracy on the retained inputs rises as
+coverage falls. Crucially, the *better* abstention signal is task-dependent and follows the same
+mechanism as retrieval itself — the retrieval-reliability score dominates the model's own confidence
+exactly on tasks where the representation separates the classes, and the model's confidence is
+preferable otherwise (§4.6).
 
 ## 3.6 Summary
 
 SENTRY is the composition: temperature scaling (always on, accuracy-preserving) → reliability-gated,
-class-prior-corrected k-NN (engages only when retrieval is reliable) → conformal set construction
-with abstention. Every component is post-hoc and training-free, and the gate is what turns three
+class-prior-corrected k-NN (engages only when retrieval is reliable) → reliability-based selective
+abstention. Both components are post-hoc and training-free, and the gate is what turns two
 independent tricks into a single framework with a defensible guarantee.

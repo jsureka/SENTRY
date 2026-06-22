@@ -47,17 +47,11 @@
   <text x="730" y="262" text-anchor="middle" class="s">λ→1 when retrieval unreliable</text>
   <text x="730" y="278" text-anchor="middle" class="s">(fall back to calibrated model)</text>
 
-  <!-- conformal -->
-  <rect class="box" x="884" y="150" width="150" height="74" rx="8"/>
-  <text x="959" y="180" text-anchor="middle" class="ti">conformal</text>
-  <text x="959" y="198" text-anchor="middle" class="s">RAPS sets,</text>
-  <text x="959" y="214" text-anchor="middle" class="s">coverage ≥ 1−α</text>
-
   <!-- output -->
-  <rect class="box" x="884" y="250" width="150" height="74" rx="8"/>
-  <text x="959" y="280" text-anchor="middle" class="ti">decision</text>
-  <text x="959" y="298" text-anchor="middle" class="s">calibrated label</text>
-  <text x="959" y="314" text-anchor="middle" class="s">+ abstention</text>
+  <rect class="box" x="884" y="186" width="150" height="92" rx="8"/>
+  <text x="959" y="218" text-anchor="middle" class="ti">decision</text>
+  <text x="959" y="240" text-anchor="middle" class="s">calibrated label</text>
+  <text x="959" y="258" text-anchor="middle" class="s">+ abstention (selective)</text>
 
   <!-- edges -->
   <line class="e" x1="134" y1="220" x2="166" y2="220"/>
@@ -67,6 +61,5 @@
   <text x="350" y="300" class="s">[CLS] emb.</text>
   <path class="e" d="M580,128 C606,128 606,200 626,200"/>
   <path class="e" d="M580,314 C606,314 606,250 626,250"/>
-  <line class="e" x1="830" y1="200" x2="880" y2="190"/>
-  <line class="e" x1="830" y1="250" x2="880" y2="280"/>
+  <line class="e" x1="830" y1="225" x2="880" y2="228"/>
 </svg>

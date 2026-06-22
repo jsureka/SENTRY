@@ -2,9 +2,8 @@
 
 SENTRY sits at the intersection of four lines of research: pre-trained models for code
 classification, post-hoc calibration of neural classifiers, retrieval-augmented prediction, and
-selective / conformal prediction. We review each, then situate our work against the most closely
-related software-engineering systems — deep vulnerability detectors and input-side program
-adaptation.
+selective prediction. We review each, then situate our work against the most closely related
+software-engineering systems — deep vulnerability detectors and input-side program adaptation.
 
 ## 2.1 Pre-trained models for code classification
 
@@ -60,19 +59,17 @@ embeddings — but adds two things the original recipe lacks for our setting: a 
 that decides *when* retrieval should be trusted (rather than always interpolating), and an awareness
 that retrieval quality is bounded by how well the host representation separates the classes (§2.5).
 
-## 2.4 Selective prediction and conformal prediction
+## 2.4 Selective prediction
 
 A reliable deployed model should be able to *abstain*. Selective prediction, or classification with a
 reject option (El-Yaniv & Wiener, 2010; Geifman & El-Yaniv, 2017), trades coverage for accuracy by
 declining to predict on low-confidence inputs; SelectiveNet (Geifman & El-Yaniv, 2019) learns the
-reject head end-to-end. Conformal prediction (Vovk et al., 2005) instead returns *prediction sets*
-with a finite-sample, distribution-free coverage guarantee; Regularized Adaptive Prediction Sets
-(RAPS; Angelopoulos et al., 2021) produce small, adaptive sets and are especially effective with many
-classes. These frameworks are well developed in vision and NLP but are rarely applied to code
-defect / vulnerability classification. SENTRY brings both to bear: it exposes a **retrieval-reliability
-score** (neighbour distance and vote agreement) as a selective-prediction signal, and wraps the
-calibrated output in split-conformal RAPS sets whose coverage we verify under
-semantic-preserving program transformations.
+reject head end-to-end. Such methods are well developed in vision and NLP but rarely applied to code
+defect / vulnerability classification. SENTRY contributes a domain-specific abstention signal: beyond
+the model's own confidence, it exposes a **retrieval-reliability score** (neighbour distance and vote
+agreement) that is the better abstention criterion precisely on tasks where the representation
+separates the classes (§4.6) — tying selective prediction to the same mechanism that governs whether
+retrieval helps at all.
 
 ## 2.5 Deep vulnerability detection and its limits
 
@@ -113,9 +110,9 @@ final framework; the model's own confidence and the retrieval-reliability signal
 
 To our knowledge, no prior work on code defect / vulnerability classification occupies the cell that
 simultaneously (i) preserves or improves accuracy, (ii) corrects calibration, and (iii) offers
-selective prediction with a coverage guarantee, all **training-free** on a frozen model. Accuracy-only
-SE systems (CodeImprove, Devign, LineVul) ignore (ii)–(iii); post-hoc calibration (Guo et al., 2017;
-Desai & Durrett, 2020; Spiess et al., 2025) is accuracy-neutral and ignores (iii); selective /
-conformal methods supply (iii) in the abstract but are not instantiated for this domain. SENTRY fills
-that cell, and its gate makes the accuracy/abstention trade-off *adaptive* to whether the underlying
+principled selective abstention, all **training-free** on a frozen model. Accuracy-only SE systems
+(CodeImprove, Devign, LineVul) ignore (ii)–(iii); post-hoc calibration (Guo et al., 2017; Desai &
+Durrett, 2020; Spiess et al., 2025) is accuracy-neutral and ignores (iii); selective-prediction
+methods supply (iii) in the abstract but are not instantiated for this domain. SENTRY fills that
+cell, and its gate makes the accuracy/abstention trade-off *adaptive* to whether the underlying
 representation is trustworthy.

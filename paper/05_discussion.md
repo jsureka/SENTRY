@@ -44,8 +44,7 @@ SENTRY cannot make retrieval help on vulnerability detection, because the limita
 representation*, not the layer: when vulnerable and safe code overlap in embedding space (Chakraborty
 et al., 2021), no amount of post-hoc retrieval can recover a signal the encoder did not encode. The
 honest consequence is that on such tasks SENTRY contributes calibration and abstention but not
-accuracy. The conformal component is also uninformative on binary tasks, where prediction sets are
-trivial.
+accuracy.
 
 ## 5.4 Future work
 

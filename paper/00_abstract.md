@@ -7,10 +7,10 @@ vulnerability detectors, yet their predicted confidences are trusted blindly and
 badly miscalibrated: across four task–model settings we measure mean confidence exceeding accuracy
 by 8 to 23 points. We present **SENTRY**, a training-free, inference-only reliability layer that
 wraps a *frozen* classifier and is designed to keep its accuracy while ensuring it is not
-*confidently wrong*. SENTRY composes three post-hoc components — temperature scaling for
-calibration, reliability-gated k-nearest-neighbour retrieval over a datastore of training
-embeddings, and split-conformal prediction sets — unified by a gate that trusts retrieval only when
-the underlying representation is reliable. On 4-class defect prediction the gated retrieval improves
+*confidently wrong*. SENTRY composes two post-hoc components — temperature scaling for calibration
+and reliability-gated k-nearest-neighbour retrieval over a datastore of training embeddings —
+unified by a gate that trusts retrieval only when the underlying representation is reliable, and it
+exposes a retrieval-reliability signal for selective abstention. On 4-class defect prediction the gated retrieval improves
 accuracy by 1.3–2.9 points on two model families (McNemar $p=4\times10^{-6}$ and $2\times10^{-19}$)
 while cutting Expected Calibration Error from 0.08 to 0.01–0.02. On binary vulnerability detection,
 where vulnerable and safe code overlap in representation space, k-NN significantly *harms* accuracy;

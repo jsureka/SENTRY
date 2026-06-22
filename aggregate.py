@@ -36,13 +36,7 @@ for d in dirs:
         out += "### OOD Detection Metrics (Mahalanobis, Energy, RMD, Baseline)\n"
         out += "```json\n" + json.dumps(json.load(open(p3)), indent=2) + "\n```\n\n"
         
-    # 4. Conformal Prediction
-    p4 = os.path.join(d, 'conformal', 'conformal_metrics.json')
-    if os.path.exists(p4):
-        out += "### Conformal Prediction Results (RAPS/LAC)\n"
-        out += "```json\n" + json.dumps(json.load(open(p4)), indent=2) + "\n```\n\n"
-        
-    # 5. McNemar Test
+    # 4. McNemar Test
     p5 = os.path.join(d, 'significance', 'mcnemar_results.json')
     if os.path.exists(p5):
         out += "### McNemar Statistical Significance Tests\n"
