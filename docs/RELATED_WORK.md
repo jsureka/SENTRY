@@ -23,6 +23,8 @@ and (B) works that **do report calibration** (ECE/Brier).
 | Guo et al. (temp scaling) | ICML'17 | image/NLP | calibration | Yes | **unchanged** (post-hoc) | Yes | No |
 | Desai & Durrett | EMNLP'20 | NLI/paraphrase | calibration of BERT/RoBERTa | Yes | unchanged | Yes | No |
 | Spiess et al. | ICSE'25 | code generation (LLMs) | calibration/correctness | Yes | unchanged | Yes | No (reflection/rescale) |
+| Zhou et al. (calib. code models) | ICSE'24 | 5 code models, 4 tasks | *diagnoses* miscalibration (ID+OOD) | Yes | n/a (study) | n/a | No |
+| Ding et al. (How Far Are We?) | ICSE'25 | vuln (PrimeVul) | *diagnoses* data/label quality | No | — | n/a | No |
 | JIT-Calibration | arXiv'25 (2504.12051) | JIT defect (QT/OpenStack) | calibration | Yes | unchanged | Yes | No |
 | Selective prediction | general ML | — | abstention | — | trade coverage | Yes | Yes |
 

@@ -23,8 +23,6 @@ We additionally document and correct a data-integrity error in previously record
 numbers, and release a CPU-only reproduction harness for every result.
 
 
----
-
 # 1. Introduction
 
 Pre-trained code models are increasingly deployed as automated gatekeepers: defect predictors that
@@ -68,8 +66,6 @@ matches the CodeXGLUE CodeBERT baseline, and line-level / data-flow methods rema
 value is trustworthiness added on top of a comparable base, at no training cost.
 
 
----
-
 # 2. Related Work
 
 SENTRY sits at the intersection of four lines of research: pre-trained models for code
@@ -107,11 +103,18 @@ al., 2019; Minderer et al., 2021) and complements it with the Brier score. In NL
 (2020) showed pre-trained transformers are reasonably calibrated in-domain but degrade out-of-domain,
 with temperature scaling recovering much of the gap.
 
-Calibration has only very recently reached code models. Spiess et al. (2025) study the calibration
-and correctness of language models for code generation, arguing that trustworthy confidence is a
-prerequisite for developer adoption. Closest to our setting, a 2025 study of just-in-time defect
-prediction reports ECE for CodeBERT-based detectors (≈8–12%) and shows temperature and Platt scaling
-reduce it to ≈2–6%. SENTRY differs in two ways. First, it makes calibration the *primary* lens on a
+Calibration has only very recently reached code models, and is now an active line at the top
+software-engineering venues. Most directly, Zhou et al. (ICSE 2024, *On Calibration of Pre-trained
+Code Models*) conduct a systematic study of five pre-trained code models across four
+code-understanding tasks and find them **miscalibrated**, particularly out-of-distribution —
+independent motivation for a post-hoc reliability layer such as ours. Spiess et al. (2025) study the
+calibration and correctness of language models for code generation, arguing that trustworthy
+confidence is a prerequisite for developer adoption. Closest to our setting, a 2025 study of
+just-in-time defect prediction reports ECE for CodeBERT-based detectors (≈8–12%) and shows
+temperature and Platt scaling reduce it to ≈2–6%. The broader machine-learning community treats
+uncertainty quantification and confidence calibration as a first-class concern for trustworthy
+models (see the 2025 survey of Liu et al.), with selective deferral / abstention the dominant
+deployment pattern — the same role our gate plays. SENTRY differs in two ways. First, it makes calibration the *primary* lens on a
 defect/vulnerability classification pipeline rather than an afterthought. Second — and unlike pure
 post-hoc calibration, which is accuracy-neutral by construction — SENTRY's retrieval component can
 *improve accuracy* where it is reliable, so the framework delivers calibration **and** an accuracy
@@ -155,7 +158,12 @@ the classes, and class imbalance compounds the problem. This finding is central 
 **predicts** that retrieval over such a representation cannot help, because the nearest neighbours of
 a query are label-noise. Our vulnerability experiments confirm this quantitatively (low MCC ≈ 0.26;
 k-NN significantly *harms* accuracy), and the contribution is mechanistic — SENTRY's gate *detects*
-the unreliable-retrieval regime and falls back to calibration, preserving accuracy. We make no
+the unreliable-retrieval regime and falls back to calibration, preserving accuracy. More recently,
+Ding et al. (ICSE 2025, *Vulnerability Detection with Code Language Models: How Far Are We?*)
+reach a convergent conclusion from the data side: widely used vulnerability benchmarks suffer from
+poor label quality and heavy duplication, yielding unreliable reported performance, and they release
+the cleaned **PrimeVul** dataset in response. Together with ReVeal, this frames our vulnerability
+negative result as a property of the task and its data rather than a defect of the layer. We make no
 accuracy-SOTA claim on vulnerability detection; line-level and data-flow methods remain stronger on
 that axis, and our base detector matches the CodeXGLUE CodeBERT baseline rather than the SOTA.
 
@@ -189,8 +197,6 @@ methods supply (iii) in the abstract but are not instantiated for this domain. S
 cell, and its gate makes the accuracy/abstention trade-off *adaptive* to whether the underlying
 representation is trustworthy.
 
-
----
 
 # 3. Methodology
 
@@ -290,8 +296,6 @@ class-prior-corrected k-NN (engages only when retrieval is reliable) → reliabi
 abstention. Both components are post-hoc and training-free, and the gate is what turns two
 independent tricks into a single framework with a defensible guarantee.
 
-
----
 
 # 4. Evaluation
 
@@ -464,8 +468,6 @@ prediction. Together these support the framework's guarantee: **accuracy never b
 always improved.**
 
 
----
-
 # 5. Discussion
 
 ## 5.1 The dichotomy is the contribution
@@ -526,8 +528,6 @@ adapt the input back in-scope, then calibrate and gate the output. Broader evalu
 languages, datasets, and encoder families would further test the separability mechanism.
 
 
----
-
 # 6. Conclusion
 
 Deployed code classifiers are judged on accuracy and trusted on confidence, yet their confidence is
@@ -550,8 +550,6 @@ one guarantee: **accuracy never below the base model, and calibration always imp
 figures, and tables are reproducible on CPU from the released harness.
 
 
----
-
 # References
 
 Chakraborty, S., Krishna, R., Ding, Y., & Ray, B. (2021). *Deep Learning Based Vulnerability
@@ -560,6 +558,10 @@ arXiv:2009.07235.
 
 Desai, S., & Durrett, G. (2020). *Calibration of Pre-trained Transformers.* EMNLP 2020.
 arXiv:2003.07892.
+
+Ding, Y., Fu, Y., Ibrahim, O., Sitawarin, C., Chen, X., Alomair, B., Wagner, D., Ray, B., & Chen, Y.
+(2025). *Vulnerability Detection with Code Language Models: How Far Are We?* ICSE 2025, pp. 1729–1741.
+arXiv:2403.18624. (Introduces the PrimeVul dataset.)
 
 El-Yaniv, R., & Wiener, Y. (2010). *On the Foundations of Noise-free Selective Classification.* JMLR
 11.
@@ -596,6 +598,9 @@ Out-of-Distribution Samples and Adversarial Attacks.* NeurIPS 2018.
 Liu, W., Wang, X., Owens, J., & Li, Y. (2020). *Energy-based Out-of-distribution Detection.* NeurIPS
 2020.
 
+Liu, X., Chen, T., Da, L., Chen, C., Lin, Z., & Wei, H. (2025). *Uncertainty Quantification and
+Confidence Calibration in Large Language Models: A Survey.* arXiv:2503.15850.
+
 Lu, S., Guo, D., Ren, S., Huang, J., Svyatkovskiy, A., Blanco, A., et al. (2021). *CodeXGLUE: A
 Machine Learning Benchmark Dataset for Code Understanding and Generation.* NeurIPS Datasets and
 Benchmarks 2021. arXiv:2102.04664.
@@ -626,6 +631,7 @@ Zhou, Y., Liu, S., Siow, J., Du, X., & Liu, Y. (2019). *Devign: Effective Vulner
 by Learning Comprehensive Program Semantics via Graph Neural Networks.* NeurIPS 2019.
 arXiv:1909.03496.
 
+Zhou, Z., Sha, C., & Peng, X. (2024). *On Calibration of Pre-trained Code Models.* ICSE 2024.
+DOI:10.1145/3597503.3639126.
 
----
 

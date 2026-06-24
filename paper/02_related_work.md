@@ -35,11 +35,18 @@ al., 2019; Minderer et al., 2021) and complements it with the Brier score. In NL
 (2020) showed pre-trained transformers are reasonably calibrated in-domain but degrade out-of-domain,
 with temperature scaling recovering much of the gap.
 
-Calibration has only very recently reached code models. Spiess et al. (2025) study the calibration
-and correctness of language models for code generation, arguing that trustworthy confidence is a
-prerequisite for developer adoption. Closest to our setting, a 2025 study of just-in-time defect
-prediction reports ECE for CodeBERT-based detectors (≈8–12%) and shows temperature and Platt scaling
-reduce it to ≈2–6%. SENTRY differs in two ways. First, it makes calibration the *primary* lens on a
+Calibration has only very recently reached code models, and is now an active line at the top
+software-engineering venues. Most directly, Zhou et al. (ICSE 2024, *On Calibration of Pre-trained
+Code Models*) conduct a systematic study of five pre-trained code models across four
+code-understanding tasks and find them **miscalibrated**, particularly out-of-distribution —
+independent motivation for a post-hoc reliability layer such as ours. Spiess et al. (2025) study the
+calibration and correctness of language models for code generation, arguing that trustworthy
+confidence is a prerequisite for developer adoption. Closest to our setting, a 2025 study of
+just-in-time defect prediction reports ECE for CodeBERT-based detectors (≈8–12%) and shows
+temperature and Platt scaling reduce it to ≈2–6%. The broader machine-learning community treats
+uncertainty quantification and confidence calibration as a first-class concern for trustworthy
+models (see the 2025 survey of Liu et al.), with selective deferral / abstention the dominant
+deployment pattern — the same role our gate plays. SENTRY differs in two ways. First, it makes calibration the *primary* lens on a
 defect/vulnerability classification pipeline rather than an afterthought. Second — and unlike pure
 post-hoc calibration, which is accuracy-neutral by construction — SENTRY's retrieval component can
 *improve accuracy* where it is reliable, so the framework delivers calibration **and** an accuracy
@@ -83,7 +90,12 @@ the classes, and class imbalance compounds the problem. This finding is central 
 **predicts** that retrieval over such a representation cannot help, because the nearest neighbours of
 a query are label-noise. Our vulnerability experiments confirm this quantitatively (low MCC ≈ 0.26;
 k-NN significantly *harms* accuracy), and the contribution is mechanistic — SENTRY's gate *detects*
-the unreliable-retrieval regime and falls back to calibration, preserving accuracy. We make no
+the unreliable-retrieval regime and falls back to calibration, preserving accuracy. More recently,
+Ding et al. (ICSE 2025, *Vulnerability Detection with Code Language Models: How Far Are We?*)
+reach a convergent conclusion from the data side: widely used vulnerability benchmarks suffer from
+poor label quality and heavy duplication, yielding unreliable reported performance, and they release
+the cleaned **PrimeVul** dataset in response. Together with ReVeal, this frames our vulnerability
+negative result as a property of the task and its data rather than a defect of the layer. We make no
 accuracy-SOTA claim on vulnerability detection; line-level and data-flow methods remain stronger on
 that axis, and our base detector matches the CodeXGLUE CodeBERT baseline rather than the SOTA.
 
