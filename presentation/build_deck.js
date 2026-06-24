@@ -410,8 +410,8 @@ function s18(){
   title(s,"Strengths, limits, and next steps");
   const cols=[
     ["Strengths",C.green,C.greenT,ICONS.thumb,["Training-free, model-agnostic","Honest confidence (calibrated)","Significant defect-task gain"]],
-    ["Weaknesses",C.red,C.redT,ICONS.warn,["Binary tasks not yet helped","Not accuracy state-of-the-art","Efficiency not yet measured"]],
-    ["What’s next",C.teal,C.tealT,ICONS.flask,["Better gate for yes/no tasks","Measure speed / cost savings","Combine with CodeImprove"]],
+    ["Weaknesses",C.red,C.redT,ICONS.warn,["Binary tasks not yet helped","Not accuracy state-of-the-art","Evaluated on 2 tasks × 2 models"]],
+    ["What’s next",C.teal,C.tealT,ICONS.flask,["Better gate for yes/no tasks","More datasets and tasks","Combine with CodeImprove"]],
   ];
   let x=M;
   for(const [h,col,bg,ic,items] of cols){
