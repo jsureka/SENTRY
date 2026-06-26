@@ -84,6 +84,31 @@ pres.layout = "WIDE";
 pres.author = "Jitesh Sureka";
 pres.title = "SENTRY — Results & Discussion";
 
+// ---- progressive reveal: emit one slide per cumulative step. Survives Google Slides
+//      import (real PPTX element animations do not), so the build appears on click-advance.
+function reveal(meta, steps){
+  for(let k=1;k<=steps.length;k++){
+    const s = pres.addSlide(); base(s, meta);
+    if(meta.t) title(s, meta.t);
+    for(let j=0;j<k;j++) steps[j](s);
+  }
+}
+// ---- scatter helper: two classes as dots; "sep" = apart, "ov" = overlapping ----
+function scatterBox(s, bx, by, bw, bh, label, mode){
+  s.addShape("roundRect",{x:bx,y:by,w:bw,h:bh,rectRadius:0.06,fill:{color:"FFFFFF"},line:{color:C.line,width:1},shadow:shadow()});
+  s.addText(label,{x:bx,y:by+0.12,w:bw,h:0.32,fontFace:BFONT,fontSize:14,bold:true,color:C.ink,align:"center",margin:0});
+  let seed = mode==="sep" ? 7 : 23;
+  const rnd=()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };
+  const padX=0.35, top=by+0.7, plotW=bw-2*padX, plotH=bh-1.0;
+  const plot=(cx,sp,col)=>{ for(let i=0;i<13;i++){
+    let fx=cx+(rnd()-0.5)*sp, fy=0.5+(rnd()-0.5)*0.85;
+    fx=Math.max(0.05,Math.min(0.95,fx)); fy=Math.max(0.05,Math.min(0.95,fy));
+    s.addShape("ellipse",{x:bx+padX+fx*plotW, y:top+fy*plotH, w:0.16,h:0.16, fill:{color:col}, line:{color:"FFFFFF",width:0.75}});
+  }};
+  if(mode==="sep"){ plot(0.27,0.34,C.teal); plot(0.73,0.34,C.red); }
+  else { plot(0.5,0.85,C.teal); plot(0.5,0.85,C.red); }
+}
+
 // ============ 1. TITLE ============
 function s1(){
   const s = pres.addSlide(); s.background={color:C.bg};
@@ -332,11 +357,11 @@ function s14(){
   s.addText("miscalibration (ECE) — confidence way off",{x:M,y:5.2,w:5.2,h:0.6,fontFace:BFONT,fontSize:13,color:C.body,align:"center",margin:0});
   s.addImage({data:ICONS.arrow,x:M+5.45,y:4.35,w:0.7,h:0.5});
   card(s,M+6.4,3.1,5.2,3.0,C.greenT);
-  s.addText("After SENTRY",{x:M+6.4,y:3.35,w:5.2,h:0.4,fontFace:BFONT,fontSize:15,color:C.green,bold:true,align:"center",margin:0});
+  s.addText("After temperature scaling",{x:M+6.4,y:3.35,w:5.2,h:0.4,fontFace:BFONT,fontSize:15,color:C.green,bold:true,align:"center",margin:0});
   s.addText("0.06",{x:M+6.4,y:3.75,w:5.2,h:1.3,fontFace:HFONT,fontSize:72,bold:true,color:C.green,align:"center",margin:0});
   s.addText("confidence now tracks reality",{x:M+6.4,y:5.2,w:5.2,h:0.6,fontFace:BFONT,fontSize:13,color:C.body,align:"center",margin:0});
-  s.addText("Worst-case base (vulnerability, binary). Temperature scaling restores calibration on every task (defect 0.08→0.02); overconfidence in neural nets is well documented (Guo et al., 2017).",
-    {x:M,y:6.35,w:11.8,h:0.4,fontFace:BFONT,fontSize:11,italic:true,color:C.mute,margin:0});
+  s.addText("Calibration is standard (temperature scaling, Guo et al. 2017; for code, Zhou et al. ICSE’24) — we apply it, not invent it. We measure it because the SE detector papers don't. Worst-case base shown (vulnerability); every task improves (defect 0.08→0.02).",
+    {x:M,y:6.3,w:11.8,h:0.5,fontFace:BFONT,fontSize:11,italic:true,color:C.mute,margin:0});
 }
 
 // ============ 15. RQ2 RESULT ============
@@ -354,7 +379,7 @@ function s15(){
   card(s,M+7.0,2.5,4.6,1.6,C.greenT);
   iconCircle(s,M+7.3,2.85,0.9,ICONS.check,"FFFFFF");
   s.addText("Statistically significant",{x:M+8.35,y:2.65,w:3.0,h:0.5,fontFace:HFONT,fontSize:16,bold:true,color:C.ink,margin:0});
-  s.addText("McNemar, p < 1e-15",{x:M+8.35,y:3.2,w:3.0,h:0.5,fontFace:BFONT,fontSize:13,color:C.body,margin:0});
+  s.addText("McNemar, p = 2e-19",{x:M+8.35,y:3.2,w:3.0,h:0.5,fontFace:BFONT,fontSize:13,color:C.body,margin:0});
   card(s,M+7.0,4.3,4.6,2.0);
   iconCircle(s,M+7.3,4.62,0.9,ICONS.scale,C.tealT);
   s.addText("Above CodeImprove’s base model (+1.6 pts) — while also fixing confidence, no retraining.",
@@ -404,24 +429,45 @@ function s17(){
     {x:M,y:6.55,w:11.9,h:0.5,fontFace:BFONT,fontSize:11,italic:true,color:C.mute,margin:0});
 }
 
-// ============ 18. STRENGTHS / WEAKNESS / NEXT ============
+// ============ CALIBRATION ANALOGY (plain words, animated) ============
+function sCalib(){
+  reveal({n:"3a",kicker:"Plain words",alt:true,t:"What does “calibrated” mean?"},[
+    s=>{ iconCircle(s,M,2.6,1.4,ICONS.gauge,C.tealT);
+         s.addText("A weather app says “90% chance of rain.”",{x:M+1.9,y:2.75,w:9,h:0.7,fontFace:HFONT,fontSize:23,bold:true,color:C.ink,valign:"middle",margin:0}); },
+    s=>{ s.addText("Calibrated: on those days it really does rain about 9 times in 10.",{x:M,y:4.25,w:11.5,h:0.6,fontFace:BFONT,fontSize:19,color:C.green,margin:0}); },
+    s=>{ s.addText("Our code models say “90% sure” and are right far less often — confidently wrong.",{x:M,y:5.0,w:11.5,h:0.6,fontFace:BFONT,fontSize:19,color:C.red,margin:0}); },
+    s=>{ s.addText("Calibration (temperature scaling, standard since Guo 2017) fixes this. We apply it — then go further by also improving accuracy.",{x:M,y:5.95,w:11.5,h:0.7,fontFace:BFONT,fontSize:15,italic:true,color:C.mute,margin:0}); },
+  ]);
+}
+
+// ============ SEPARABILITY VISUAL (when it works, animated) ============
+function sSep(){
+  reveal({n:"7a",kicker:"When it works",t:"When can retrieval help?"},[
+    s=>{ s.addText("SENTRY checks similar past code. That only helps if similar code carries the same label.",{x:M,y:2.05,w:11.6,h:0.6,fontFace:BFONT,fontSize:17,color:C.body,margin:0}); },
+    s=>{ scatterBox(s,M,2.95,5.2,3.25,"Separable — defect, clone","sep");
+         s.addText("Classes sit apart → neighbours trustworthy → accuracy ↑",{x:M,y:6.3,w:5.2,h:0.45,fontFace:BFONT,fontSize:13,bold:true,color:C.green,align:"center",margin:0}); },
+    s=>{ scatterBox(s,M+6.4,2.95,5.2,3.25,"Overlapping — vulnerability","ov");
+         s.addText("Classes mixed → neighbours are noise → retrieval skipped",{x:M+6.4,y:6.3,w:5.2,h:0.45,fontFace:BFONT,fontSize:13,bold:true,color:C.red,align:"center",margin:0}); },
+    s=>{ s.addText("The deciding factor is separability — not whether the task is binary. Clone detection is binary yet separable, and it works.",{x:M,y:6.85,w:11.6,h:0.4,fontFace:BFONT,fontSize:12,italic:true,color:C.mute,align:"center",margin:0}); },
+  ]);
+}
+
+// ============ 18. STRENGTHS / WEAKNESS / NEXT (animated, one column per click) ============
 function s18(){
-  const s = pres.addSlide(); base(s,{n:18,kicker:"Discussion"});
-  title(s,"Strengths, limits, and next steps");
   const cols=[
     ["Strengths",C.green,C.greenT,ICONS.thumb,["Accuracy + calibration together, no retraining","Significant defect gain (McNemar p=4e-6)","7 datasets × 4 encoders; clone control"]],
     ["Weaknesses",C.red,C.redT,ICONS.warn,["Retrieval can’t help non-separable tasks (vuln)","Separability seen post-hoc, not predicted","Vulnerability = representability ceiling (data)"]],
     ["What’s next",C.teal,C.tealT,ICONS.flask,["Auto-gate from the separability signal","Compose with uncertainty estimators (kNN-UE)","Broaden tasks; combine with CodeImprove"]],
   ];
-  let x=M;
-  for(const [h,col,bg,ic,items] of cols){
-    card(s,x,2.4,3.7,4.0);
-    iconCircle(s,x+0.35,2.7,0.85,ic,bg);
-    s.addText(h,{x:x+1.3,y:2.7,w:2.3,h:0.85,fontFace:HFONT,fontSize:18,bold:true,color:col,valign:"middle",margin:0});
-    s.addText(items.map((t,i)=>({text:t,options:{bullet:{indent:14},breakLine:true,paraSpaceAfter:10}})),
-      {x:x+0.4,y:3.75,w:3.0,h:2.5,fontFace:BFONT,fontSize:14,color:C.body,valign:"top",margin:0});
-    x+=3.95;
-  }
+  reveal({n:18,kicker:"Discussion",t:"Strengths, limits, and next steps"},
+    cols.map((col,idx)=>(s)=>{
+      const [h,c,bg,ic,items]=col, x=M+idx*3.95;
+      card(s,x,2.4,3.7,4.0);
+      iconCircle(s,x+0.35,2.7,0.85,ic,bg);
+      s.addText(h,{x:x+1.3,y:2.7,w:2.3,h:0.85,fontFace:HFONT,fontSize:18,bold:true,color:c,valign:"middle",margin:0});
+      s.addText(items.map(t=>({text:t,options:{bullet:{indent:14},breakLine:true,paraSpaceAfter:10}})),
+        {x:x+0.4,y:3.75,w:3.0,h:2.5,fontFace:BFONT,fontSize:14,color:C.body,valign:"top",margin:0});
+    }));
 }
 
 // ============ 19. CLOSING ============
@@ -441,7 +487,7 @@ function s19(){
 
 (async()=>{
   await loadIcons();
-  [s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16,s17,s18,s19].forEach(f=>f());
+  [s1,s2,s3,sCalib,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,sSep,s16,s17,s18,s19].forEach(f=>f());
   await pres.writeFile({ fileName:"/Users/bs01366/SENTRY/presentation/SENTRY_results_discussion.pptx" });
   console.log("deck written");
 })().catch(e=>{ console.error(e); process.exit(1); });

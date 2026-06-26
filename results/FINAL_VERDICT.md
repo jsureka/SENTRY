@@ -6,11 +6,14 @@ reproduces from the `analysis/` scripts; no value is hand-edited.
 
 ## Reliability wins
 
-**1. Calibration on every task.** A single fitted temperature removes over-confidence:
-mean ECE 0.13 → 0.03 on multiclass (Δ +0.10, 9/10), 0.20 → 0.06 on vulnerability (Δ +0.025).
+**0. Baseline (measured, not novel): code classifiers are over-confident.** Mean confidence ≫
+accuracy (vuln·CodeBERT 0.81 vs 0.61). Temperature scaling removes it — mean ECE 0.13 → 0.03 on
+multiclass, 0.20 → 0.06 on vulnerability. Calibration of code models is known (Guo 2017; Zhou et al.,
+ICSE 2024); SENTRY applies it. This is table stakes, reported because the SE detector papers omit it,
+not claimed as the contribution.
 
-**2. Accuracy and calibration together (separable tasks).** Pure calibration is accuracy-neutral;
-reliability-gated retrieval also raises accuracy.
+**1. Accuracy and calibration together (separable tasks) — the part calibration cannot do.** Pure
+calibration is accuracy-neutral; reliability-gated retrieval also raises accuracy.
 
 | | accuracy | ECE | significance |
 |---|---|---|---|
@@ -19,10 +22,10 @@ reliability-gated retrieval also raises accuracy.
 | Multiclass (frozen, mean) | **+3.1pp** (7/10) | ↑ | risk–coverage (AURC) +0.021 |
 | Clone, BigCloneBench | **+2.5pp** (4/4) | ↑ | — |
 
-**3. Selective abstention.** The gate's reliability signal (neighbour distance + vote agreement)
+**2. Selective abstention.** The gate's reliability signal (neighbour distance + vote agreement)
 improves risk–coverage on separable tasks (gate AURC Δ +0.021 multiclass).
 
-**4. Never-harm fallback.** Where retrieval is unreliable the gate reverts to the calibrated model:
+**3. Never-harm fallback.** Where retrieval is unreliable the gate reverts to the calibrated model:
 accuracy preserved on 17/18 vulnerability points; calibration still fixed.
 
 ## When it works — the separability scope

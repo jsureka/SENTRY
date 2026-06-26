@@ -13,20 +13,29 @@ retrieval is reliable, more accurate. Masters-thesis work, **complementary to** 
 (Rathnasuriya et al., ICSE 2025, [arXiv:2501.15804](https://arxiv.org/abs/2501.15804)): CodeImprove
 adapts the *input*; SENTRY wraps the *output*.
 
-## Reliability wins
+## What SENTRY does
 
-- **Calibration on every task.** Fine-tuned code classifiers are badly over-confident (mean
-  confidence ≫ accuracy). A single temperature fixes it — ECE drops 3–5× (multiclass 0.13 → 0.03;
-  vulnerability 0.20 → 0.06).
-- **Accuracy *and* calibration together, where the representation separates classes.** Pure
-  calibration is accuracy-neutral; SENTRY's reliability-gated retrieval also raises accuracy.
-  **Defect prediction:** 0.818 → **0.831** (CodeBERT, McNemar p = 4e-6) / 0.806 → **0.835**
-  (GraphCodeBERT, p = 2e-19), ECE 0.082 → **0.017**. Across separable tasks: **+3.1pp** accuracy
-  (multiclass), **+2.5pp** (clone), with improved risk–coverage (AURC).
+We first measure that deployed code classifiers are badly over-confident (e.g. CodeBERT on
+vulnerability: 0.81 mean confidence at 0.61 accuracy). Calibration itself is a *known* fix
+(temperature scaling, Guo 2017; for code models, Zhou et al. ICSE 2024) and SENTRY applies it —
+that part is table stakes, not our contribution. What SENTRY adds on top:
+
+- **Accuracy *and* calibration together, where the representation separates classes — which
+  calibration alone cannot do.** Calibration is accuracy-neutral by construction; SENTRY's
+  reliability-gated retrieval also raises accuracy. **Defect prediction:** 0.818 → **0.831**
+  (CodeBERT, McNemar p = 4e-6) / 0.806 → **0.835** (GraphCodeBERT, p = 2e-19), ECE 0.082 → **0.017**.
+  Across separable tasks: **+3.1pp** accuracy (multiclass), **+2.5pp** (clone), with improved
+  risk–coverage (AURC).
+- **A characterisation of *when* it works — separability** (below): the contribution that ties the
+  results together, with binary clone detection as the control.
 - **Selective abstention.** The gate's reliability signal (neighbour distance + vote agreement) drives
   abstention; risk–coverage improves on separable tasks.
 - **Never-harm by design.** Where retrieval is unreliable the gate falls back to the calibrated model,
   so accuracy is preserved (vulnerability: retrieval-neutral, calibration still fixed).
+
+For reference, calibration coverage: ECE drops 3–5× on every task (multiclass 0.13 → 0.03;
+vulnerability 0.20 → 0.06) — expected from temperature scaling, reported here because the SE task
+papers that build these detectors do not.
 
 ## When it works — the separability scope
 
