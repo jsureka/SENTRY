@@ -1,9 +1,16 @@
 # Reproducing SENTRY's Results
 
-Every number in [`results/VERIFIED_RESULTS.md`](../results/VERIFIED_RESULTS.md) is produced by
-two scripts under `kNN-Prediction/`, on CPU, with no retraining:
+Two reproduction paths, both CPU/MPS, no retraining:
 
-- `reproduce_results.py` — baselines (B1/B3) + the framework (B4/M1) + patches, per combo
+- **Fine-tuned anchors** ([`results/VERIFIED_RESULTS.md`](../results/VERIFIED_RESULTS.md)) — the
+  rigorous defect/vuln verification, via `kNN-Prediction/{reproduce_results,significance_test}.py`
+  (§1–5 below).
+- **The full grid** (7 datasets × 4 encoders, [`results/FINAL_VERDICT.md`](../results/FINAL_VERDICT.md))
+  — calibration + accuracy + risk–coverage over frozen embeddings, via `analysis/` (§6 below).
+
+The anchor scripts:
+
+- `reproduce_results.py` — baselines + the framework (gated-*k*NN), per combo
 - `significance_test.py` — paired McNemar significance (continuity-corrected χ² + exact binomial)
 
 ## 1. Environment
@@ -78,3 +85,25 @@ recorded ECE column was wrong; see [`results/VERIFIED_RESULTS.md`](../results/VE
 Defect: the gated-kNN engages and improves accuracy + calibration (significant). Vuln: the
 representation does not separate, so kNN is skipped and temperature scaling alone fixes
 calibration while preserving accuracy.
+
+## 6. The full grid (7 datasets × 4 encoders)
+
+The reliability metrics across the grid run over **frozen** embeddings — no fine-tuned checkpoints
+needed. First build the embedding caches (one GPU/MPS pass, then 0-credit reruns), then evaluate:
+
+```bash
+export KMP_DUPLICATE_LIB_OK=TRUE
+cd kNN-Prediction
+python run_grid.py        # frozen-embedding caches: 6 datasets × 4 encoders -> grid_emb/*.npz
+python embed_clone.py     # BigCloneBench pair embeddings -> grid_emb/*__bigclone.npz
+
+cd ..
+python analysis/methods_table.py   # calibration + accuracy + risk-coverage per method -> results/methods_grid.csv
+python analysis/clone_point.py     # the binary-but-separable control
+```
+
+Datasets load from Hugging Face (Devign/CodeChef local; POJ-104, ReVeal, PrimeVul, DiverseVul,
+BigCloneBench via `datasets`). `grid_emb/` caches are git-ignored and rebuilt by the two scripts
+above. Expected headline: retrieval/gating improve accuracy on separable tasks (multiclass +3.1pp,
+clone +2.5pp) and are retrieval-neutral on vulnerability; temperature scaling reduces ECE on every
+task. See [`results/FINAL_VERDICT.md`](../results/FINAL_VERDICT.md).

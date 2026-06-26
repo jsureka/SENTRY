@@ -1,111 +1,70 @@
-# Positioning vs Related Work — "Reliability Layer" Framing
+# Positioning vs Related Work — a training-free reliability framework
 
-**Claim we are selling:** a *training-free, output-side reliability layer* that keeps a
-deployed code model's accuracy at-least-the-same while ensuring it is **not confidently
-wrong** — via calibration (temperature scaling) and retrieval-gated prediction (kNN that
-engages only when the representation is reliable), with the same reliability signal driving
-selective abstention.
-
-Two camps to compare against: (A) SE works that report **accuracy only** (no calibration),
-and (B) works that **do report calibration** (ECE/Brier).
+**What we contribute:** a training-free, output-side **reliability framework** for code classifiers
+— temperature calibration + reliability-gated *k*NN retrieval + selective abstention over a frozen
+model — that improves calibration on every task and, where the representation is separable, accuracy
+and risk–coverage as well. We position it against **recent** (2023–2025) calibration / uncertainty
+work and input-side adaptation; older methods appear as the lineage of the techniques we apply.
 
 ---
 
-## 1. Axis-coverage comparison (what each work actually does)
+## 1. The closest recent work
 
-| Work | Venue | Task / data | Optimizes | Reports ECE? | Accuracy effect | Training-free? | Abstention / sets? |
-|---|---|---|---|---|---|---|---|
-| **Ours (SENTRY)** | — | defect (CodeChef), vuln (Devign) | acc **and** calibration **and** selective | **Yes (+Brier)** | **↑ defect (sig), = vuln** | **Yes** | **Yes (selective)** |
-| CodeImprove | ICSE'25 | defect, vuln | accuracy (input adaptation) | No | ↑ up to 8.78% | No (GA transforms) | OOD detect only (AUC .924) |
-| Devign | NeurIPS'19 | vuln | accuracy/F1 (GNN) | No | — | No | No |
-| ReVeal "Are We There Yet?" | TSE'21 | vuln | F1; *diagnoses* why DL vuln fails | No | — | n/a | No |
-| LineVul / DeepDFA | MSR'22 / '24 | vuln | F1 + line localization | No | SOTA F1 | No | No |
-| Guo et al. (temp scaling) | ICML'17 | image/NLP | calibration | Yes | **unchanged** (post-hoc) | Yes | No |
-| Desai & Durrett | EMNLP'20 | NLI/paraphrase | calibration of BERT/RoBERTa | Yes | unchanged | Yes | No |
-| Spiess et al. | ICSE'25 | code generation (LLMs) | calibration/correctness | Yes | unchanged | Yes | No (reflection/rescale) |
-| Zhou et al. (calib. code models) | ICSE'24 | 5 code models, 4 tasks | *diagnoses* miscalibration (ID+OOD) | Yes | n/a (study) | n/a | No |
-| Ding et al. (How Far Are We?) | ICSE'25 | vuln (PrimeVul) | *diagnoses* data/label quality | No | — | n/a | No |
-| JIT-Calibration | arXiv'25 (2504.12051) | JIT defect (QT/OpenStack) | calibration | Yes | unchanged | Yes | No |
-| Selective prediction | general ML | — | abstention | — | trade coverage | Yes | Yes |
+| Work | Venue | Relation to us |
+|---|---|---|
+| **kNN-UE** — Hashimoto, Kamigaito, Watanabe | **Findings of NAACL 2025** | The direct recent competitor: *k*NN-based uncertainty via neighbour distance + label ratio. We implement it faithfully (Eq. 4–5) and compare on selective AURC + ECE; it is the uncertainty-scoring reference, while our complementary axis is prediction correction (accuracy), which calibration does not change. Never previously applied to *code*. |
+| **Zhou et al.** — On Calibration of Pre-trained Code Models | **ICSE 2024** | Shows code models are miscalibrated in- and out-of-distribution; recommends temperature scaling. We apply calibration as one of the intervention families in the dichotomy study. |
+| **Ding et al.** — Vulnerability Detection: How Far Are We? (PrimeVul) | **ICSE 2024** | Independent evidence that vulnerability detection is near-random *even fine-tuned* — i.e. a **representability ceiling**, which our binary-vulnerability result confirms from the frozen-embedding side. |
+| **DiverseVul** — Chen et al. | **2023** | Recent large vuln benchmark; another point on our binary-vuln (non-separable) side. |
+| **Spiess et al.** — Calibration and Correctness of LMs for Code | **ICSE 2025** | Calibration as a first-class concern for *generative* code LLMs; we work on encoder *classifiers* and add the separability characterisation. |
+| **CodeImprove** — Rathnasuriya et al. | **ICSE 2025** | Input-side adaptation (semantic transforms, OOD detection) that raises accuracy. We are **output-side and complementary**: we characterise when output-side training-free help is even possible, and can stack on top. |
 
-**The empty cell that is our contribution:** no prior code-classification work occupies the
-row that does accuracy **+** calibration **+** abstention, training-free, on the same model.
+**The gap we fill:** no prior code-classification work asks *for which tasks* training-free
+retrieval/gating/ensembling help, nor isolates the answer to **embedding separability** via a
+binary-but-separable control (clone detection).
 
----
+## 2. Technique lineage (applied, not contributed — cited for provenance only)
 
-## 2. Camp A — accuracy-only SE works (e.g. CodeImprove)
+These are the building blocks we *use*; we do not claim them, and they are not our comparison
+targets beyond the head-to-heads above.
 
-These never ask whether the model is *confidently wrong*. CodeImprove is the natural anchor:
-it improves accuracy by **adapting inputs** (genetic, semantic-preserving transforms) and
-flags out-of-scope inputs (AUC 0.924) — an **input-side** method that needs the transform
-machinery and reports no calibration.
+- **Retrieval / *k*NN inference** — *k*NN-LM (Khandelwal et al., 2020); deep *k*NN (Papernot &
+  McDaniel, 2018). We apply retrieval to frozen code-encoder classification.
+- **Calibration** — temperature scaling (Guo et al., 2017). Used as the calibration baseline; it is
+  rank-preserving (cannot change accuracy or selective ranking), which is exactly why prediction
+  correction is a distinct axis.
+- **Post-hoc OOD / uncertainty scores** — Mahalanobis (Lee et al., 2018), Energy (Liu et al., 2020),
+  Relative Mahalanobis (Ren et al., 2021). Run as named baselines in `reliability_headtohead.py`.
 
-- **We are complementary, not competing.** Ours is **output-side and training-free** — it
-  consumes logits + a datastore, changes nothing upstream, and can **stack on top of**
-  CodeImprove (adapt the input, then calibrate/gate the output).
-- **We measure what they don't.** On the *same* CodeChef/Devign splits, the base models are
-  badly over-confident (defect mean-conf 0.90 vs acc 0.82; vuln 0.84 vs 0.61). Accuracy-only
-  reporting hides this. We quantify and fix it (defect ECE 0.082→0.016/0.007; vuln 0.20→0.06).
-- **We do not claim accuracy SOTA.** CodeImprove's input adaptation and their detector AUC
-  0.924 are a different objective; we keep base accuracy (vuln) or improve it modestly and
-  significantly (defect, +1.3–2.9pp, McNemar p≤4e-6) while adding a reliability guarantee.
+## 3. Positioning
 
-> One-liner: *CodeImprove makes the input fit the model; we make the model's confidence fit
-> reality — and we never had to retrain.*
+Post-hoc calibration and uncertainty methods — temperature scaling (Guo'17), Mahalanobis, energy,
+and kNN-UE (NAACL 2025) — are **rank-preserving**: they improve calibration / uncertainty but leave
+accuracy unchanged. SENTRY's reliability-gated retrieval additionally improves **accuracy** on
+separable tasks (defect, McNemar p = 4e-6; +2.5–3.1pp across multiclass and clone), an axis those
+methods do not touch, and falls back to calibration where retrieval is unreliable. Input-side
+adaptation (CodeImprove, ICSE 2025) improves accuracy but reports no calibration; SENTRY is
+output-side, reports both, and can stack on top. The separability characterisation (across 7 datasets
+× 4 encoders) tells a deployer **when** the retrieval component will contribute.
 
-## 3. Camp B — works that report ECE
+## 4. Suggested related-work sentence for the paper
 
-Pure calibration is **accuracy-neutral by construction** (temp/Platt scale logits; argmax is
-unchanged). Reference points (different datasets — for axis context, not head-to-head):
+> Recent work calibrates code models post-hoc (Zhou et al., ICSE 2024; Spiess et al., ICSE 2025) and
+> estimates uncertainty by retrieval (kNN-UE, Hashimoto et al., NAACL 2025) — all accuracy-neutral —
+> while input-side adaptation raises accuracy but not calibration (CodeImprove, ICSE 2025). We present
+> a training-free, output-side reliability framework that improves calibration on every task and
+> additionally **raises accuracy** where the representation is separable (defect, p = 4e-6), with the
+> gate falling back to calibration otherwise; the separability characterisation tells a deployer when
+> the retrieval component contributes (corroborating the vulnerability ceiling of Ding et al., ICSE
+> 2024).
 
-| Method | base ECE | post-hoc ECE | changes accuracy? |
-|---|---|---|---|
-| Guo'17 temp scaling (DNNs) | ~15–20% | ~1–3% | no |
-| Desai&Durrett'20 (BERT/RoBERTa, in-domain) | ~2–4% | lower | no |
-| JIT-Calib'25 CodeBERT4JIT | 8–12% | temp→6%, Platt→2–4% | no |
-| **Ours, defect (M1+ gated-kNN)** | **7–8%** | **0.7–1.6%** | **yes, accuracy ↑ (sig)** |
-| **Ours, vuln (temp-only)** | **20–23%** | **5.5–6.1%** | no (accuracy preserved) |
-
-- **Our post-calibration ECE is in the best-in-class range** (≤2%, comparable to JIT-Calib's
-  Platt) — but with the crucial extra: on defect we **also raise accuracy** while calibrating,
-  which no pure-calibration method does.
-- **Caveat (honesty):** datasets differ (CodeChef/Devign vs QT/OpenStack/NLI), so this is
-  axis positioning, not a leaderboard win. We cite these to show our numbers are *realistic*
-  and our reporting is *standard*, pre-empting "is this ECE even believable?"
-- **Spiess (ICSE'25)** legitimizes calibration as a first-class concern for code models; we
-  extend it from generation/correctness to **classification reliability with abstention**.
-
-## 4. The unifying mechanism (why it is one framework, not two tricks)
-
-The gate is the product. Our P2 result shows **retrieval reliability (neighbor
-distance + vote agreement) cleanly separates the two regimes**:
-
-- **Separating representation** (defect, MCC ~0.74): neighbors agree → gated-kNN engages →
-  accuracy ↑ + calibration ↑. Retrieval-reliability even beats raw confidence for abstention.
-- **Overlapping representation** (vuln, MCC ~0.26): neighbors disagree → fall back to
-  temperature-only → **accuracy preserved**, calibration still fixed.
-
-So the framework's guarantee is **accuracy ≥ base, always better-calibrated**: it *adds*
-signal where retrieval is trustworthy and *gets out of the way* where it isn't. That is the
-"keep accuracy, never confidently wrong" sell — and it is grounded in measured behaviour, not
-asserted. (Current results select the regime per-task by this signal; the auto-gate is the
-natural next step, with the P2 evidence already supporting it.)
-
-## 5. Suggested related-work sentence for the paper
-
-> Unlike input-side adaptation (CodeImprove, ICSE'25) that improves accuracy but leaves model
-> confidence unexamined, and unlike post-hoc calibration (Guo'17; Desai & Durrett'20;
-> Spiess et al. ICSE'25; JIT-Calibration'25) that fixes ECE without touching accuracy, we
-> contribute a training-free output-side layer that **preserves or improves accuracy
-> (significantly on defect, p≤4e-6) while reducing ECE by 4–10×**, and adds retrieval-gated
-> selective prediction — the first such reliability layer for code defect / vulnerability
-> classification.
-
-### References
-- CodeImprove — arXiv:2501.15804, ICSE 2025
-- Guo et al., "On Calibration of Modern Neural Networks", ICML 2017
-- Desai & Durrett, "Calibration of Pre-trained Transformers", EMNLP 2020
-- Spiess et al., "Calibration and Correctness of Language Models for Code", ICSE 2025
-- "On the Calibration of Just-in-time Defect Prediction", arXiv:2504.12051, 2025
-- Chakraborty et al. (ReVeal), "Deep Learning based Vulnerability Detection: Are We There Yet?", TSE 2021
-- Fu & Tantithamthavorn, "LineVul", MSR 2022
+### References (recent-first)
+- Hashimoto, Kamigaito, Watanabe, "Efficient Nearest Neighbor based Uncertainty Estimation for NLP Tasks", Findings of NAACL 2025 ([arXiv:2407.02138](https://arxiv.org/abs/2407.02138)).
+- Zhou et al., "On the Calibration of Pre-trained Code Models", ICSE 2024 (DOI 10.1145/3597503.3639126).
+- Ding et al., "Vulnerability Detection with Code Language Models: How Far Are We?" (PrimeVul), ICSE 2024 ([arXiv:2403.18624](https://arxiv.org/abs/2403.18624)).
+- Spiess et al., "Calibration and Correctness of Language Models for Code", ICSE 2025.
+- Chen et al., "DiverseVul", 2023 ([arXiv:2304.00409](https://arxiv.org/abs/2304.00409)).
+- Rathnasuriya et al., "CodeImprove", ICSE 2025 ([arXiv:2501.15804](https://arxiv.org/abs/2501.15804)).
+- Khandelwal et al., "Generalization through Memorization: Nearest Neighbor Language Models", ICLR 2020.
+- Guo et al., "On Calibration of Modern Neural Networks", ICML 2017.
+- Lee et al., "A Simple Unified Framework for Detecting OOD Samples", NeurIPS 2018; Liu et al., "Energy-based OOD Detection", NeurIPS 2020.

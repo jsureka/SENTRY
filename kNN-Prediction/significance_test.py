@@ -3,7 +3,7 @@ mcnemar_test.py — paired significance of the patched method on defect-codebert
 
 Reuses cached outputs (out_defect_codebert_*.npz) + the bundled datastore, so it
 runs in seconds. McNemar on discordant pairs, both continuity-corrected chi-square
-and exact binomial (the latter is the honest one when discordances are few).
+and exact binomial (the latter is preferred when discordances are few).
 """
 import os
 os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")

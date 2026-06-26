@@ -1,0 +1,852 @@
+{
+  "all": {
+    "base": {
+      "acc": {
+        "mean": 0.8015,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 28
+      },
+      "f1": {
+        "mean": 0.6009,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 28
+      },
+      "ece": {
+        "mean": 0.0754,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 28
+      },
+      "aurc": {
+        "mean": 0.1212,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 28
+      },
+      "never_harm_acc": 28,
+      "n_points": 28
+    },
+    "temp": {
+      "acc": {
+        "mean": 0.8015,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 28
+      },
+      "f1": {
+        "mean": 0.6009,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 28
+      },
+      "ece": {
+        "mean": 0.0237,
+        "mean_delta": 0.0517,
+        "wins": 24,
+        "n": 28
+      },
+      "aurc": {
+        "mean": 0.1204,
+        "mean_delta": 0.0008,
+        "wins": 7,
+        "n": 28
+      },
+      "never_harm_acc": 28,
+      "n_points": 28
+    },
+    "logit_adj": {
+      "acc": {
+        "mean": 0.7766,
+        "mean_delta": -0.0249,
+        "wins": 4,
+        "n": 28
+      },
+      "f1": {
+        "mean": 0.6312,
+        "mean_delta": 0.0304,
+        "wins": 19,
+        "n": 28
+      },
+      "ece": {
+        "mean": 0.0975,
+        "mean_delta": -0.0221,
+        "wins": 8,
+        "n": 28
+      },
+      "aurc": {
+        "mean": 0.1282,
+        "mean_delta": -0.007,
+        "wins": 1,
+        "n": 28
+      },
+      "never_harm_acc": 11,
+      "n_points": 28
+    },
+    "knn": {
+      "acc": {
+        "mean": 0.8151,
+        "mean_delta": 0.0136,
+        "wins": 16,
+        "n": 28
+      },
+      "f1": {
+        "mean": 0.6222,
+        "mean_delta": 0.0213,
+        "wins": 17,
+        "n": 28
+      },
+      "ece": {
+        "mean": 0.082,
+        "mean_delta": -0.0066,
+        "wins": 9,
+        "n": 28
+      },
+      "aurc": {
+        "mean": 0.1092,
+        "mean_delta": 0.0119,
+        "wins": 15,
+        "n": 28
+      },
+      "never_harm_acc": 26,
+      "n_points": 28
+    },
+    "gate": {
+      "acc": {
+        "mean": 0.8141,
+        "mean_delta": 0.0126,
+        "wins": 15,
+        "n": 28
+      },
+      "f1": {
+        "mean": 0.6211,
+        "mean_delta": 0.0202,
+        "wins": 14,
+        "n": 28
+      },
+      "ece": {
+        "mean": 0.0804,
+        "mean_delta": -0.005,
+        "wins": 12,
+        "n": 28
+      },
+      "aurc": {
+        "mean": 0.1127,
+        "mean_delta": 0.0085,
+        "wins": 14,
+        "n": 28
+      },
+      "never_harm_acc": 25,
+      "n_points": 28
+    },
+    "temp_gate": {
+      "acc": {
+        "mean": 0.8149,
+        "mean_delta": 0.0134,
+        "wins": 14,
+        "n": 28
+      },
+      "f1": {
+        "mean": 0.622,
+        "mean_delta": 0.0211,
+        "wins": 14,
+        "n": 28
+      },
+      "ece": {
+        "mean": 0.0388,
+        "mean_delta": 0.0366,
+        "wins": 21,
+        "n": 28
+      },
+      "aurc": {
+        "mean": 0.1166,
+        "mean_delta": 0.0046,
+        "wins": 16,
+        "n": 28
+      },
+      "never_harm_acc": 25,
+      "n_points": 28
+    }
+  },
+  "multiclass": {
+    "base": {
+      "acc": {
+        "mean": 0.771,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 10
+      },
+      "f1": {
+        "mean": 0.7296,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 10
+      },
+      "ece": {
+        "mean": 0.1265,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 10
+      },
+      "aurc": {
+        "mean": 0.1133,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 10
+      },
+      "never_harm_acc": 10,
+      "n_points": 10
+    },
+    "temp": {
+      "acc": {
+        "mean": 0.771,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 10
+      },
+      "f1": {
+        "mean": 0.7296,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 10
+      },
+      "ece": {
+        "mean": 0.026,
+        "mean_delta": 0.1005,
+        "wins": 9,
+        "n": 10
+      },
+      "aurc": {
+        "mean": 0.1111,
+        "mean_delta": 0.0022,
+        "wins": 7,
+        "n": 10
+      },
+      "never_harm_acc": 10,
+      "n_points": 10
+    },
+    "logit_adj": {
+      "acc": {
+        "mean": 0.768,
+        "mean_delta": -0.003,
+        "wins": 3,
+        "n": 10
+      },
+      "f1": {
+        "mean": 0.7384,
+        "mean_delta": 0.0088,
+        "wins": 6,
+        "n": 10
+      },
+      "ece": {
+        "mean": 0.1269,
+        "mean_delta": -0.0003,
+        "wins": 2,
+        "n": 10
+      },
+      "aurc": {
+        "mean": 0.116,
+        "mean_delta": -0.0027,
+        "wins": 1,
+        "n": 10
+      },
+      "never_harm_acc": 7,
+      "n_points": 10
+    },
+    "knn": {
+      "acc": {
+        "mean": 0.8052,
+        "mean_delta": 0.0342,
+        "wins": 8,
+        "n": 10
+      },
+      "f1": {
+        "mean": 0.7779,
+        "mean_delta": 0.0483,
+        "wins": 8,
+        "n": 10
+      },
+      "ece": {
+        "mean": 0.1268,
+        "mean_delta": -0.0002,
+        "wins": 4,
+        "n": 10
+      },
+      "aurc": {
+        "mean": 0.0856,
+        "mean_delta": 0.0276,
+        "wins": 6,
+        "n": 10
+      },
+      "never_harm_acc": 10,
+      "n_points": 10
+    },
+    "gate": {
+      "acc": {
+        "mean": 0.802,
+        "mean_delta": 0.031,
+        "wins": 7,
+        "n": 10
+      },
+      "f1": {
+        "mean": 0.7758,
+        "mean_delta": 0.0463,
+        "wins": 7,
+        "n": 10
+      },
+      "ece": {
+        "mean": 0.12,
+        "mean_delta": 0.0066,
+        "wins": 7,
+        "n": 10
+      },
+      "aurc": {
+        "mean": 0.0927,
+        "mean_delta": 0.0206,
+        "wins": 7,
+        "n": 10
+      },
+      "never_harm_acc": 8,
+      "n_points": 10
+    },
+    "temp_gate": {
+      "acc": {
+        "mean": 0.8053,
+        "mean_delta": 0.0342,
+        "wins": 8,
+        "n": 10
+      },
+      "f1": {
+        "mean": 0.7783,
+        "mean_delta": 0.0487,
+        "wins": 8,
+        "n": 10
+      },
+      "ece": {
+        "mean": 0.0379,
+        "mean_delta": 0.0886,
+        "wins": 8,
+        "n": 10
+      },
+      "aurc": {
+        "mean": 0.0901,
+        "mean_delta": 0.0232,
+        "wins": 10,
+        "n": 10
+      },
+      "never_harm_acc": 10,
+      "n_points": 10
+    }
+  },
+  "binary_vuln": {
+    "base": {
+      "acc": {
+        "mean": 0.8184,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 18
+      },
+      "f1": {
+        "mean": 0.5294,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 18
+      },
+      "ece": {
+        "mean": 0.047,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 18
+      },
+      "aurc": {
+        "mean": 0.1256,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 18
+      },
+      "never_harm_acc": 18,
+      "n_points": 18
+    },
+    "temp": {
+      "acc": {
+        "mean": 0.8184,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 18
+      },
+      "f1": {
+        "mean": 0.5294,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 18
+      },
+      "ece": {
+        "mean": 0.0224,
+        "mean_delta": 0.0247,
+        "wins": 15,
+        "n": 18
+      },
+      "aurc": {
+        "mean": 0.1256,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 18
+      },
+      "never_harm_acc": 18,
+      "n_points": 18
+    },
+    "logit_adj": {
+      "acc": {
+        "mean": 0.7814,
+        "mean_delta": -0.037,
+        "wins": 1,
+        "n": 18
+      },
+      "f1": {
+        "mean": 0.5717,
+        "mean_delta": 0.0423,
+        "wins": 13,
+        "n": 18
+      },
+      "ece": {
+        "mean": 0.0811,
+        "mean_delta": -0.0341,
+        "wins": 6,
+        "n": 18
+      },
+      "aurc": {
+        "mean": 0.135,
+        "mean_delta": -0.0094,
+        "wins": 0,
+        "n": 18
+      },
+      "never_harm_acc": 4,
+      "n_points": 18
+    },
+    "knn": {
+      "acc": {
+        "mean": 0.8206,
+        "mean_delta": 0.0022,
+        "wins": 8,
+        "n": 18
+      },
+      "f1": {
+        "mean": 0.5357,
+        "mean_delta": 0.0064,
+        "wins": 9,
+        "n": 18
+      },
+      "ece": {
+        "mean": 0.0571,
+        "mean_delta": -0.0101,
+        "wins": 5,
+        "n": 18
+      },
+      "aurc": {
+        "mean": 0.1224,
+        "mean_delta": 0.0032,
+        "wins": 9,
+        "n": 18
+      },
+      "never_harm_acc": 16,
+      "n_points": 18
+    },
+    "gate": {
+      "acc": {
+        "mean": 0.8208,
+        "mean_delta": 0.0024,
+        "wins": 8,
+        "n": 18
+      },
+      "f1": {
+        "mean": 0.5351,
+        "mean_delta": 0.0057,
+        "wins": 7,
+        "n": 18
+      },
+      "ece": {
+        "mean": 0.0584,
+        "mean_delta": -0.0114,
+        "wins": 5,
+        "n": 18
+      },
+      "aurc": {
+        "mean": 0.1239,
+        "mean_delta": 0.0017,
+        "wins": 7,
+        "n": 18
+      },
+      "never_harm_acc": 17,
+      "n_points": 18
+    },
+    "temp_gate": {
+      "acc": {
+        "mean": 0.8203,
+        "mean_delta": 0.0019,
+        "wins": 6,
+        "n": 18
+      },
+      "f1": {
+        "mean": 0.5351,
+        "mean_delta": 0.0058,
+        "wins": 6,
+        "n": 18
+      },
+      "ece": {
+        "mean": 0.0393,
+        "mean_delta": 0.0077,
+        "wins": 13,
+        "n": 18
+      },
+      "aurc": {
+        "mean": 0.1313,
+        "mean_delta": -0.0058,
+        "wins": 6,
+        "n": 18
+      },
+      "never_harm_acc": 15,
+      "n_points": 18
+    }
+  },
+  "fine_tuned": {
+    "base": {
+      "acc": {
+        "mean": 0.7114,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 4
+      },
+      "f1": {
+        "mean": 0.6888,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 4
+      },
+      "ece": {
+        "mean": 0.1439,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 4
+      },
+      "aurc": {
+        "mean": 0.1699,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 4
+      },
+      "never_harm_acc": 4,
+      "n_points": 4
+    },
+    "temp": {
+      "acc": {
+        "mean": 0.7114,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 4
+      },
+      "f1": {
+        "mean": 0.6888,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 4
+      },
+      "ece": {
+        "mean": 0.0389,
+        "mean_delta": 0.105,
+        "wins": 4,
+        "n": 4
+      },
+      "aurc": {
+        "mean": 0.1698,
+        "mean_delta": 0.0002,
+        "wins": 2,
+        "n": 4
+      },
+      "never_harm_acc": 4,
+      "n_points": 4
+    },
+    "logit_adj": {
+      "acc": {
+        "mean": 0.7138,
+        "mean_delta": 0.0024,
+        "wins": 2,
+        "n": 4
+      },
+      "f1": {
+        "mean": 0.6948,
+        "mean_delta": 0.006,
+        "wins": 2,
+        "n": 4
+      },
+      "ece": {
+        "mean": 0.1301,
+        "mean_delta": 0.0138,
+        "wins": 2,
+        "n": 4
+      },
+      "aurc": {
+        "mean": 0.1728,
+        "mean_delta": -0.0029,
+        "wins": 0,
+        "n": 4
+      },
+      "never_harm_acc": 4,
+      "n_points": 4
+    },
+    "knn": {
+      "acc": {
+        "mean": 0.7174,
+        "mean_delta": 0.006,
+        "wins": 2,
+        "n": 4
+      },
+      "f1": {
+        "mean": 0.6983,
+        "mean_delta": 0.0095,
+        "wins": 3,
+        "n": 4
+      },
+      "ece": {
+        "mean": 0.1276,
+        "mean_delta": 0.0163,
+        "wins": 3,
+        "n": 4
+      },
+      "aurc": {
+        "mean": 0.1679,
+        "mean_delta": 0.002,
+        "wins": 2,
+        "n": 4
+      },
+      "never_harm_acc": 4,
+      "n_points": 4
+    },
+    "gate": {
+      "acc": {
+        "mean": 0.7191,
+        "mean_delta": 0.0077,
+        "wins": 2,
+        "n": 4
+      },
+      "f1": {
+        "mean": 0.7004,
+        "mean_delta": 0.0116,
+        "wins": 2,
+        "n": 4
+      },
+      "ece": {
+        "mean": 0.1446,
+        "mean_delta": -0.0008,
+        "wins": 1,
+        "n": 4
+      },
+      "aurc": {
+        "mean": 0.1715,
+        "mean_delta": -0.0016,
+        "wins": 1,
+        "n": 4
+      },
+      "never_harm_acc": 4,
+      "n_points": 4
+    },
+    "temp_gate": {
+      "acc": {
+        "mean": 0.7164,
+        "mean_delta": 0.005,
+        "wins": 1,
+        "n": 4
+      },
+      "f1": {
+        "mean": 0.6976,
+        "mean_delta": 0.0088,
+        "wins": 2,
+        "n": 4
+      },
+      "ece": {
+        "mean": 0.0552,
+        "mean_delta": 0.0887,
+        "wins": 4,
+        "n": 4
+      },
+      "aurc": {
+        "mean": 0.2013,
+        "mean_delta": -0.0314,
+        "wins": 2,
+        "n": 4
+      },
+      "never_harm_acc": 3,
+      "n_points": 4
+    }
+  },
+  "frozen_probe": {
+    "base": {
+      "acc": {
+        "mean": 0.8165,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 24
+      },
+      "f1": {
+        "mean": 0.5862,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 24
+      },
+      "ece": {
+        "mean": 0.064,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 24
+      },
+      "aurc": {
+        "mean": 0.1131,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 24
+      },
+      "never_harm_acc": 24,
+      "n_points": 24
+    },
+    "temp": {
+      "acc": {
+        "mean": 0.8165,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 24
+      },
+      "f1": {
+        "mean": 0.5862,
+        "mean_delta": 0.0,
+        "wins": 0,
+        "n": 24
+      },
+      "ece": {
+        "mean": 0.0212,
+        "mean_delta": 0.0429,
+        "wins": 20,
+        "n": 24
+      },
+      "aurc": {
+        "mean": 0.1122,
+        "mean_delta": 0.0009,
+        "wins": 5,
+        "n": 24
+      },
+      "never_harm_acc": 24,
+      "n_points": 24
+    },
+    "logit_adj": {
+      "acc": {
+        "mean": 0.7871,
+        "mean_delta": -0.0294,
+        "wins": 2,
+        "n": 24
+      },
+      "f1": {
+        "mean": 0.6206,
+        "mean_delta": 0.0344,
+        "wins": 17,
+        "n": 24
+      },
+      "ece": {
+        "mean": 0.092,
+        "mean_delta": -0.028,
+        "wins": 6,
+        "n": 24
+      },
+      "aurc": {
+        "mean": 0.1208,
+        "mean_delta": -0.0077,
+        "wins": 1,
+        "n": 24
+      },
+      "never_harm_acc": 7,
+      "n_points": 24
+    },
+    "knn": {
+      "acc": {
+        "mean": 0.8314,
+        "mean_delta": 0.0149,
+        "wins": 14,
+        "n": 24
+      },
+      "f1": {
+        "mean": 0.6095,
+        "mean_delta": 0.0233,
+        "wins": 14,
+        "n": 24
+      },
+      "ece": {
+        "mean": 0.0744,
+        "mean_delta": -0.0104,
+        "wins": 6,
+        "n": 24
+      },
+      "aurc": {
+        "mean": 0.0995,
+        "mean_delta": 0.0136,
+        "wins": 13,
+        "n": 24
+      },
+      "never_harm_acc": 22,
+      "n_points": 24
+    },
+    "gate": {
+      "acc": {
+        "mean": 0.83,
+        "mean_delta": 0.0134,
+        "wins": 13,
+        "n": 24
+      },
+      "f1": {
+        "mean": 0.6079,
+        "mean_delta": 0.0216,
+        "wins": 12,
+        "n": 24
+      },
+      "ece": {
+        "mean": 0.0697,
+        "mean_delta": -0.0057,
+        "wins": 11,
+        "n": 24
+      },
+      "aurc": {
+        "mean": 0.1029,
+        "mean_delta": 0.0101,
+        "wins": 13,
+        "n": 24
+      },
+      "never_harm_acc": 21,
+      "n_points": 24
+    },
+    "temp_gate": {
+      "acc": {
+        "mean": 0.8314,
+        "mean_delta": 0.0148,
+        "wins": 13,
+        "n": 24
+      },
+      "f1": {
+        "mean": 0.6094,
+        "mean_delta": 0.0232,
+        "wins": 12,
+        "n": 24
+      },
+      "ece": {
+        "mean": 0.0361,
+        "mean_delta": 0.0279,
+        "wins": 17,
+        "n": 24
+      },
+      "aurc": {
+        "mean": 0.1025,
+        "mean_delta": 0.0106,
+        "wins": 14,
+        "n": 24
+      },
+      "never_harm_acc": 22,
+      "n_points": 24
+    }
+  }
+}
