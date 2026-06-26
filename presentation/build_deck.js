@@ -139,14 +139,14 @@ function s2(){
 function s3(){
   const s = pres.addSlide(); base(s,{n:3,kicker:"The problem"});
   title(s,"Models are overconfident");
-  s.addText("They announce “99% sure” — and are still wrong.",{x:M,y:2.25,w:11,h:0.5,fontFace:BFONT,fontSize:18,color:C.body,margin:0});
-  // confidence meter pegged
+  s.addText("They report high confidence — and are still wrong.",{x:M,y:2.25,w:11,h:0.5,fontFace:BFONT,fontSize:18,color:C.body,margin:0});
+  // confidence vs accuracy, real numbers (CodeBERT on vulnerability)
   card(s,M,3.1,5.2,2.7);
   iconCircle(s,M+0.35,3.45,0.9,ICONS.gauge,C.tealT);
-  s.addText("Says: 99% confident",{x:M+1.45,y:3.55,w:3.5,h:0.45,fontFace:BFONT,fontSize:16,bold:true,color:C.ink,margin:0});
+  s.addText("Says: 81% confident",{x:M+1.45,y:3.55,w:3.5,h:0.45,fontFace:BFONT,fontSize:16,bold:true,color:C.ink,margin:0});
   s.addShape("roundRect",{x:M+0.35,y:4.7,w:4.5,h:0.34,rectRadius:0.05,fill:{color:C.line}});
-  s.addShape("roundRect",{x:M+0.35,y:4.7,w:4.45,h:0.34,rectRadius:0.05,fill:{color:C.red}});
-  s.addText("Actually right far less often",{x:M+0.35,y:5.15,w:4.5,h:0.4,fontFace:BFONT,fontSize:13,color:C.mute,italic:true,margin:0});
+  s.addShape("roundRect",{x:M+0.35,y:4.7,w:2.78,h:0.34,rectRadius:0.05,fill:{color:C.red}});
+  s.addText("Right only 61% of the time (CodeBERT, vulnerability)",{x:M+0.35,y:5.15,w:4.7,h:0.4,fontFace:BFONT,fontSize:12,color:C.mute,italic:true,margin:0});
   // analogy
   card(s,M+5.7,3.1,5.3,2.7,C.bg2);
   iconCircle(s,M+6.05,3.45,0.9,ICONS.warn,"FBEBD2");
@@ -352,8 +352,8 @@ function s14(){
   ],{x:M,y:2.2,w:11.6,h:0.5,fontFace:BFONT,fontSize:16,margin:0});
   // before / after big stats
   card(s,M,3.1,5.2,3.0,C.redT);
-  s.addText("Before",{x:M,y:3.35,w:5.2,h:0.4,fontFace:BFONT,fontSize:15,color:C.red,bold:true,align:"center",margin:0});
-  s.addText("0.23",{x:M,y:3.75,w:5.2,h:1.3,fontFace:HFONT,fontSize:72,bold:true,color:C.red,align:"center",margin:0});
+  s.addText("Before — worst case (vulnerability)",{x:M,y:3.35,w:5.2,h:0.4,fontFace:BFONT,fontSize:14,color:C.red,bold:true,align:"center",margin:0});
+  s.addText("0.20",{x:M,y:3.75,w:5.2,h:1.3,fontFace:HFONT,fontSize:72,bold:true,color:C.red,align:"center",margin:0});
   s.addText("miscalibration (ECE) — confidence way off",{x:M,y:5.2,w:5.2,h:0.6,fontFace:BFONT,fontSize:13,color:C.body,align:"center",margin:0});
   s.addImage({data:ICONS.arrow,x:M+5.45,y:4.35,w:0.7,h:0.5});
   card(s,M+6.4,3.1,5.2,3.0,C.greenT);
@@ -370,7 +370,7 @@ function s15(){
   title(s,"Defect prediction: a real gain");
   s.addChart(pres.charts.BAR,[{name:"Accuracy",labels:["Base model","SENTRY","CodeImprove\n(base)"],values:[80.6,83.5,81.9]}],{
     x:M,y:2.4,w:6.6,h:3.9,barDir:"col",chartColors:["9DB2BD",C.teal,"9DB2BD"],
-    valAxisMinVal:74,valAxisMaxVal:84,showValue:true,dataLabelPosition:"outEnd",dataLabelColor:C.ink,
+    valAxisMinVal:70,valAxisMaxVal:90,showValue:true,dataLabelPosition:"outEnd",dataLabelColor:C.ink,
     dataLabelFontFace:BFONT,dataLabelFontSize:13,dataLabelFormatCode:'0.0"%"',
     catAxisLabelColor:C.body,catAxisLabelFontFace:BFONT,catAxisLabelFontSize:12,
     valAxisHidden:true,valGridLine:{style:"none"},catGridLine:{style:"none"},showLegend:false,
@@ -413,20 +413,18 @@ function s17(){
   title(s,"Where SENTRY sits");
   const hdr = (t)=>({text:t,options:{fill:{color:C.teal},color:"FFFFFF",bold:true,fontFace:BFONT,fontSize:13,align:"center",valign:"middle"}});
   const cell=(t,b)=>({text:t,options:{fontFace:BFONT,fontSize:13,color:C.body,align:"center",valign:"middle",bold:!!b}});
+  const hi=(t,col)=>({text:t,options:{fill:{color:C.tealT},bold:true,color:col||C.ink,fontFace:BFONT,fontSize:13,align:"center",valign:"middle"}});
   const rows=[
-    [hdr("Approach"),hdr("Defect acc."),hdr("Trust / calibration"),hdr("Retraining")],
-    [cell("CodeBERT (base)"),cell("~82%"),cell("✗ overconfident"),cell("needed")],
-    [cell("GraphCodeBERT (base)"),cell("~81%"),cell("✗ overconfident"),cell("needed")],
-    [cell("CodeImprove (ICSE’25)"),cell("~82%"),cell("— not addressed"),cell("none")],
-    [cell("Devign SOTA (CodeT5…)"),cell("66–67%*"),cell("— not addressed"),cell("needed")],
-    [{text:"SENTRY (ours)",options:{fill:{color:C.tealT},bold:true,color:C.ink,fontFace:BFONT,fontSize:13,align:"center",valign:"middle"}},
-     {text:"~84%",options:{fill:{color:C.tealT},bold:true,color:C.ink,fontFace:BFONT,fontSize:13,align:"center",valign:"middle"}},
-     {text:"✓ calibrated",options:{fill:{color:C.tealT},bold:true,color:C.green,fontFace:BFONT,fontSize:13,align:"center",valign:"middle"}},
-     {text:"none",options:{fill:{color:C.tealT},bold:true,color:C.ink,fontFace:BFONT,fontSize:13,align:"center",valign:"middle"}}],
+    [hdr("Approach (defect prediction)"),hdr("Accuracy"),hdr("Calibration"),hdr("Extra training")],
+    [cell("CodeBERT — base"),cell("81.8%"),cell("✗ overconfident"),cell("—")],
+    [hi("CodeBERT + SENTRY"),hi("83.1%"),hi("✓ calibrated",C.green),hi("none")],
+    [cell("GraphCodeBERT — base"),cell("80.6%"),cell("✗ overconfident"),cell("—")],
+    [hi("GraphCodeBERT + SENTRY"),hi("83.5%"),hi("✓ calibrated",C.green),hi("none")],
+    [cell("CodeImprove (ICSE’25, input-side)"),cell("81.9%"),cell("— not addressed"),cell("none")],
   ];
-  s.addTable(rows,{x:M,y:2.4,w:W-2*M,colW:[3.95,2.6,3.4,1.98],rowH:0.62,border:{pt:1,color:C.line},valign:"middle"});
-  s.addText("* vulnerability task. SENTRY adds calibration and reliability-gated accuracy on a comparable base — complementary to post-hoc calibration (incl. kNN-UE, NAACL’25) and to input-side CodeImprove.",
-    {x:M,y:6.55,w:11.9,h:0.5,fontFace:BFONT,fontSize:11,italic:true,color:C.mute,margin:0});
+  s.addTable(rows,{x:M,y:2.4,w:W-2*M,colW:[4.55,2.2,3.4,1.78],rowH:0.6,border:{pt:1,color:C.line},valign:"middle"});
+  s.addText("Defect prediction (CodeChef). On vulnerability detection SENTRY matches the base detector (~61%) and adds calibration + abstention — we do not claim accuracy SOTA there. Complementary to post-hoc calibration (incl. kNN-UE, NAACL’25) and to input-side CodeImprove.",
+    {x:M,y:6.5,w:11.9,h:0.6,fontFace:BFONT,fontSize:11,italic:true,color:C.mute,margin:0});
 }
 
 // ============ CALIBRATION ANALOGY (plain words, animated) ============
