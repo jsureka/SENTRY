@@ -1,0 +1,17 @@
+point,encoder,dataset,kind,C,n_train,n_test,base_acc,best_lambda,knn_blend_acc,knn_only_acc,delta_retrieval_gain,base_ece,base_aurc,S1_local_label_consistency,S2_fisher_ratio,S3_silhouette,S4_mahalanobis_margin
+codebert/codechef,codebert,codechef,frozen_probe,4,12000,1999,0.6893,0.7,0.7354,0.7139,0.046,0.05,0.1758,0.4906,0.0378,-0.0621,-0.0224
+graphcodebert/codechef,graphcodebert,codechef,frozen_probe,4,12000,1999,0.6798,0.7,0.7404,0.7379,0.0605,0.0207,0.1634,0.5141,0.0354,-0.0607,0.0034
+unixcoder/codechef,unixcoder,codechef,frozen_probe,4,12000,1999,0.6593,0.5,0.7099,0.6938,0.0505,0.0634,0.2104,0.4732,0.0199,-0.0153,0.0074
+codet5p/codechef,codet5p,codechef,frozen_probe,4,12000,1999,0.6088,0.1,0.7099,0.7074,0.1011,0.0559,0.2676,0.4848,0.0248,-0.0264,0.006
+codebert/devign,codebert,devign,frozen_probe,2,12000,2000,0.5685,0.9,0.5735,0.545,0.005,0.0524,0.3585,0.5206,0.0021,-0.0006,0.0055
+graphcodebert/devign,graphcodebert,devign,frozen_probe,2,12000,2000,0.593,0.7,0.594,0.5765,0.001,0.0508,0.3454,0.5389,0.0013,-0.0026,0.0041
+unixcoder/devign,unixcoder,devign,frozen_probe,2,12000,2000,0.561,0.5,0.589,0.5835,0.028,0.0933,0.3448,0.5483,0.0009,0.0008,0.003
+codet5p/devign,codet5p,devign,frozen_probe,2,12000,2000,0.581,0.1,0.583,0.584,0.002,0.0302,0.3714,0.5467,0.0006,0.0004,0.0026
+codebert/poj104,codebert,poj104,frozen_probe,104,11978,2000,0.8845,0.9,0.882,0.703,-0.0025,0.204,0.02,0.2642,0.7494,-0.1755,0.2079
+graphcodebert/poj104,graphcodebert,poj104,frozen_probe,104,11978,2000,0.9235,0.9,0.924,0.7975,0.0005,0.1798,0.0099,0.3814,0.5312,-0.0698,0.304
+unixcoder/poj104,unixcoder,poj104,frozen_probe,104,11978,2000,0.9215,0.9,0.9255,0.8115,0.004,0.0269,0.0093,0.4805,0.5189,0.049,0.291
+codet5p/poj104,codet5p,poj104,frozen_probe,104,11978,2000,0.7195,0.9,0.7575,0.6915,0.038,0.5143,0.1074,0.2936,0.3957,-0.0787,0.2334
+codebert/reveal,codebert,reveal,frozen_probe,2,12000,2000,0.894,0.9,0.895,0.8545,0.001,0.0183,0.0409,0.8431,0.011,0.0024,0.0478
+graphcodebert/reveal,graphcodebert,reveal,frozen_probe,2,12000,2000,0.9,0.9,0.8965,0.8545,-0.0035,0.0276,0.0393,0.8438,0.0032,-0.0596,0.0203
+unixcoder/reveal,unixcoder,reveal,frozen_probe,2,12000,2000,0.886,0.9,0.8885,0.851,0.0025,0.0351,0.0496,0.837,0.0016,-0.0101,0.0091
+codet5p/reveal,codet5p,reveal,frozen_probe,2,12000,2000,0.8985,0.9,0.8995,0.85,0.001,0.0166,0.0535,0.8379,0.0018,-0.0083,0.0124

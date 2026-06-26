@@ -379,7 +379,7 @@ function s16(){
     {text:"Vulnerable vs safe code overlaps (MCC ≈ 0.26, ReVeal).",options:{breakLine:true}},
     {text:"Neighbours are noise — SENTRY falls back to calibration; accuracy preserved.",options:{}},
   ],{x:M+6.4,y:4.2,w:4.7,h:1.7,fontFace:BFONT,fontSize:15,color:C.body,margin:0});
-  s.addText("Retrieval helps iff the representation separates classes — the gate’s reliability signal predicts which.",{x:M,y:6.4,w:11,h:0.4,fontFace:BFONT,fontSize:13,italic:true,color:C.mute,align:"center",margin:0});
+  s.addText("Retrieval helps iff the embedding separates classes — multiclass AND binary clone detection; it fails on vulnerability (unlearnable). The axis is separability, not binary-vs-multiclass.",{x:M,y:6.4,w:11,h:0.4,fontFace:BFONT,fontSize:12,italic:true,color:C.mute,align:"center",margin:0});
 }
 
 // ============ 17. COMPARE ============
@@ -400,7 +400,7 @@ function s17(){
      {text:"none",options:{fill:{color:C.tealT},bold:true,color:C.ink,fontFace:BFONT,fontSize:13,align:"center",valign:"middle"}}],
   ];
   s.addTable(rows,{x:M,y:2.4,w:W-2*M,colW:[3.95,2.6,3.4,1.98],rowH:0.62,border:{pt:1,color:C.line},valign:"middle"});
-  s.addText("* vulnerability task. SENTRY does not claim accuracy SOTA — it adds trust on a comparable base, and complements CodeImprove.",
+  s.addText("* vulnerability task. SENTRY adds calibration and reliability-gated accuracy on a comparable base — complementary to post-hoc calibration (incl. kNN-UE, NAACL’25) and to input-side CodeImprove.",
     {x:M,y:6.55,w:11.9,h:0.5,fontFace:BFONT,fontSize:11,italic:true,color:C.mute,margin:0});
 }
 
@@ -409,9 +409,9 @@ function s18(){
   const s = pres.addSlide(); base(s,{n:18,kicker:"Discussion"});
   title(s,"Strengths, limits, and next steps");
   const cols=[
-    ["Strengths",C.green,C.greenT,ICONS.thumb,["Training-free, model-agnostic","Honest confidence (calibrated)","Significant defect-task gain"]],
-    ["Weaknesses",C.red,C.redT,ICONS.warn,["Binary tasks not yet helped","Not accuracy state-of-the-art","Evaluated on 2 tasks × 2 models"]],
-    ["What’s next",C.teal,C.tealT,ICONS.flask,["Better gate for yes/no tasks","More datasets and tasks","Combine with CodeImprove"]],
+    ["Strengths",C.green,C.greenT,ICONS.thumb,["Accuracy + calibration together, no retraining","Significant defect gain (McNemar p=4e-6)","7 datasets × 4 encoders; clone control"]],
+    ["Weaknesses",C.red,C.redT,ICONS.warn,["Retrieval can’t help non-separable tasks (vuln)","Separability seen post-hoc, not predicted","Vulnerability = representability ceiling (data)"]],
+    ["What’s next",C.teal,C.tealT,ICONS.flask,["Auto-gate from the separability signal","Compose with uncertainty estimators (kNN-UE)","Broaden tasks; combine with CodeImprove"]],
   ];
   let x=M;
   for(const [h,col,bg,ic,items] of cols){
