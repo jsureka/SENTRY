@@ -1,5 +1,10 @@
 # SENTRY — Paper
 
+> **BEING REVISED to the representability-dichotomy framing (target: APSEC 2026).** The sections
+> below predate the clone-detection control and the kNN-UE (NAACL'25) comparison and are superseded.
+> Authoritative current results: [`../results/FINAL_VERDICT.md`](../results/FINAL_VERDICT.md);
+> positioning: [`../docs/RELATED_WORK.md`](../docs/RELATED_WORK.md).
+
 Academic write-up of SENTRY. Read **[`PAPER.md`](PAPER.md)** for the assembled document, or the
 individual sections:
 

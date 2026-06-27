@@ -1,5 +1,14 @@
 # SENTRY: A Training-Free Reliability Layer for Code Classifiers
 
+> **BEING REVISED — do not cite.** This draft predates the project's final framing. The
+> contribution has been reframed as a **representability dichotomy** (training-free interventions
+> help iff the task is *separable* in the frozen embedding — multiclass **and** binary clone
+> detection, not binary vulnerability), validated across 7 datasets × 4 encoders, with faithful
+> head-to-heads against the recent SOTA (kNN-UE, NAACL 2025). The "accuracy ≥ base, always better
+> calibrated" claim and the n=2 scope below are **superseded**. Current source of truth:
+> [`../results/FINAL_VERDICT.md`](../results/FINAL_VERDICT.md) and
+> [`../docs/RELATED_WORK.md`](../docs/RELATED_WORK.md). Target venue: APSEC 2026 (empirical track).
+
 ## Abstract
 
 Fine-tuned code classifiers such as CodeBERT and GraphCodeBERT are deployed as defect and

@@ -78,7 +78,7 @@ class KNNPredictor:
         if self.voting == 'uniform':
             # Each neighbor gets equal vote
             for i in range(n_queries):
-                for j in range(self.k):
+                for j in range(neighbor_labels.shape[1]):  # actual neighbours (may be < k for tiny datastores)
                     label = neighbor_labels[i, j]
                     if label < self.num_classes:
                         knn_probs[i, label] += 1.0
@@ -94,7 +94,7 @@ class KNNPredictor:
             # Smaller distance → higher weight
             weights = softmax(-distances / T, axis=1)
             for i in range(n_queries):
-                for j in range(self.k):
+                for j in range(neighbor_labels.shape[1]):  # actual neighbours (may be < k for tiny datastores)
                     label = neighbor_labels[i, j]
                     if label < self.num_classes:
                         knn_probs[i, label] += weights[i, j]

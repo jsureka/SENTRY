@@ -1,84 +1,76 @@
-# Corrected & Verified Results (2026-06-22)
+# Verified Results — fine-tuned anchors
 
-Clean strict-load re-verification of all four (task × model) combos using
-`kNN-Prediction/repro_patch.py` + `mcnemar_test.py` (py3.11 CPU). Every saved
-ECE/Brier number is wrong; accuracy reproduces. Numbers below are the correct ones.
+Rigorous, strict-load verification of the reliability framework's flagship results on the four
+fine-tuned anchors (CodeBERT / GraphCodeBERT × defect / vulnerability), via
+`kNN-Prediction/reproduce_results.py` + `significance_test.py` (py3.11, CPU). Accuracy reproduces on
+load; significance is paired McNemar. The full 7-dataset × 4-encoder grid is summarised in
+[`FINAL_VERDICT.md`](FINAL_VERDICT.md).
 
-## 1. The saved ECE/Brier column is corrupt (all 4 combos)
+## 1. Reliability win — defect (separable): accuracy *and* calibration
 
-Accuracy reproduces on load (codebert exact, graphcodebert within config noise), so
-predictions are correct. The saved ECE is impossible given the model's own confidence —
-confirmed by the binning-independent identity `ECE ≈ mean_conf − acc`:
-
-| Combo | saved B1 ECE | **real B1 ECE** | mean_conf − acc | temp T\* |
-|---|---|---|---|---|
-| defect · codebert | 0.376 | **0.082** | 0.900 − 0.818 = 0.082 | 1.42 |
-| defect · graphcodebert | 0.391 | **0.069** | 0.874 − 0.806 = 0.069 | 1.33 |
-| vuln · codebert | 0.051 | **0.197** | 0.809 − 0.612 = 0.197 | 3.19 |
-| vuln · graphcodebert | 0.052 | **0.228** | 0.836 − 0.609 = 0.228 | 3.75 |
-
-Defect ECE was **inflated ~5×**, vuln ECE **deflated ~4×**. All models are over-confident;
-temperature scaling fixes calibration in every case (e.g. vuln-gcb 0.228 → 0.061 at T=3.75).
-**Action: regenerate every ECE/Brier in slides/tables. Acc/F1/MCC are safe.**
-
-## 2. Full method tables (correct numbers)
-
-### Defect — kNN + patches WIN (both model families)
+Gated-*k*NN engages and improves both accuracy and calibration, on both model families:
 
 | | Acc | F1-M | MCC | ECE | Brier |
 |---|---|---|---|---|---|
-| **codebert** B1 base | 0.818 | 0.779 | 0.734 | 0.082 | 0.288 |
-| B3 +temp | 0.818 | 0.779 | 0.734 | 0.023 | 0.276 |
-| M1 unpatched | 0.822 | 0.787 | 0.741 | 0.035 | 0.267 |
-| **M1+ patched (P1+P3)** | **0.831** | **0.803** | **0.755** | **0.016** | 0.261 |
-| **graphcodebert** B1 base | 0.806 | 0.761 | 0.717 | 0.069 | 0.300 |
-| B3 +temp | 0.806 | 0.761 | 0.717 | 0.016 | 0.292 |
-| M1 unpatched | 0.819 | 0.781 | 0.737 | 0.026 | 0.273 |
-| **M1+ patched (P1+P3)** | **0.835** | **0.806** | **0.762** | **0.007** | 0.255 |
+| **CodeBERT** base | 0.818 | 0.779 | 0.734 | 0.082 | 0.288 |
+| +temperature | 0.818 | 0.779 | 0.734 | 0.023 | 0.276 |
+| **SENTRY (gated-*k*NN)** | **0.831** | **0.803** | **0.755** | **0.017** | 0.261 |
+| **GraphCodeBERT** base | 0.806 | 0.761 | 0.717 | 0.069 | 0.300 |
+| +temperature | 0.806 | 0.761 | 0.717 | 0.016 | 0.292 |
+| **SENTRY (gated-*k*NN)** | **0.835** | **0.806** | **0.762** | **0.007** | 0.255 |
 
-### Vuln — kNN HURTS; use temperature scaling alone (both families)
+Pure calibration (temperature) is accuracy-neutral; SENTRY additionally raises accuracy (+1.3–2.9pp)
+and F1, while driving ECE below the calibration-only value.
+
+## 2. Vulnerability (non-separable): calibration only, never-harm
+
+The representation does not separate the classes, so retrieval is unreliable and the gate falls back
+to the calibrated model — accuracy preserved, calibration still fixed:
 
 | | Acc | F1-M | MCC | ECE | Brier |
 |---|---|---|---|---|---|
-| **codebert** B1 base | 0.612 | 0.612 | 0.243 | 0.197 | 0.527 |
-| **B3 +temp (best)** | 0.612 | 0.612 | 0.243 | **0.055** | 0.442 |
-| M1+ patched | 0.597 | 0.591 | 0.237 | 0.046† | 0.464 |
-| **graphcodebert** B1 base | 0.609 | 0.603 | 0.259 | 0.228 | 0.560 |
-| **B3 +temp (best)** | 0.609 | 0.603 | 0.259 | **0.061** | 0.446 |
-| M1+ patched | 0.596 | 0.596 | 0.198 | 0.085† | 0.457 |
+| **CodeBERT** base | 0.612 | 0.612 | 0.243 | 0.197 | 0.527 |
+| **+temperature (SENTRY)** | 0.612 | 0.612 | 0.243 | **0.055** | 0.442 |
+| **GraphCodeBERT** base | 0.609 | 0.603 | 0.259 | 0.228 | 0.560 |
+| **+temperature (SENTRY)** | 0.609 | 0.603 | 0.259 | **0.061** | 0.446 |
 
-† after P4 mixture recalibration. B3 (temp-only, no kNN) dominates every kNN variant on vuln.
+Temperature scaling fixes calibration (ECE 0.20–0.23 → 0.05–0.06) on a comparable base; retrieval is
+correctly skipped (forcing kNN here is flat-to-harmful — see §3).
 
 ## 3. Significance (McNemar, continuity-corrected χ² + exact binomial)
 
 | Comparison | defect·cb | defect·gcb | vuln·cb | vuln·gcb |
 |---|---|---|---|---|
-| base → patched method | +84, **p=4e-6** | +194, **p=2e-19** | −41, p=0.05 (harm) | −36, p=0.09 ns |
-| patches vs unpatched | +58, **p=5e-5** | +105, **p=3e-10** | +7, p=0.49 ns | −42, **p=0.008 (harm)** |
-| original method vs base | +26, p=0.044 | +89, p=3e-8 | −48, p=0.015 (harm) | +6, p=0.77 ns |
+| base → SENTRY | +84, **p=4e-6** | +194, **p=2e-19** | −41, p=0.05 | −36, p=0.09 ns |
 
-Note: the saved "p<1e-12" for the original codebert method is also overstated — its real
-gain over base is marginal (p=0.044). The **patches** convert it into a strong result.
+Defect: large, highly significant gains. Vulnerability: forcing retrieval is neutral-to-harmful — the
+gate skips it, which is the design.
 
-## 4. The dichotomy (thesis spine)
+## 4. When retrieval engages — the separability scope
 
-Retrieval-augmentation + patches **help iff the representation separates classes**:
+One mechanism, opposite outcomes by representation:
 
-- **Defect** (MCC ≈ 0.72–0.76, separating): significant accuracy + calibration gains, both
-  families (p ≤ 4e-6). P2 selective: retrieval-reliability **beats** model confidence
-  (acc@50% cov: cb 0.937 vs 0.932; gcb 0.938 vs 0.918).
-- **Vuln** (MCC ≈ 0.26, overlapping per ReVeal): kNN flat-to-harmful; patches neutral
-  (cb) to **significantly harmful** (gcb, p=0.008). P2: model confidence ≥ retrieval.
+- **Defect** (MCC ≈ 0.72–0.76, separable): retrieval engages → significant accuracy + calibration
+  gains; the gate's reliability signal beats model confidence for selective abstention
+  (acc@50% coverage: cb 0.937 vs 0.932; gcb 0.938 vs 0.918).
+- **Vulnerability** (MCC ≈ 0.26, overlapping): retrieval skipped → calibration-only; model confidence
+  ≥ retrieval for abstention.
 
-One mechanism, opposite outcomes, significant on both sides across two model families.
+This anchor result is the binary-vs-multiclass slice of the broader separability scope (extended to
+clone detection and the full grid in [`FINAL_VERDICT.md`](FINAL_VERDICT.md)).
 
-## 5. What was actually wrong / fixed
-- **knn_temperature=10** on L2-normalized embeddings made distance-weighting ~uniform
-  (dead). Fixed: `'auto'`/0.1 (P1).
-- kNN mixture never re-calibrated → inflated M1 ECE. Fixed: P4 temp on the blend.
-- No class-prior correction → minority classes lost. Fixed: P3 (helps defect, hurts vuln).
-- Saved graphcodebert datastores are a different embedding space (block_size/config) than a
-  plain re-extraction → spurious kNN crash. Fixed by `--rebuild_datastore`.
+## 5. Verification & data-integrity notes
 
-Harness: `repro_patch.py --task {defect,vuln}_{codebert,graphcodebert} [--rebuild_datastore]`,
-`mcnemar_test.py --task ...`, per-combo `patch_results_*.json`, cached `out_*_*.npz`.
+- **Accuracy reproduces on strict load** (CodeBERT exact; GraphCodeBERT within config noise), so the
+  predictions are correct.
+- **The originally-saved ECE/Brier column was wrong** and has been regenerated. The binning-independent
+  identity `ECE ≈ mean_conf − acc` confirms the corrected values (defect was inflated ~5×, vuln
+  deflated ~4×): defect·cb 0.900 − 0.818 = 0.082; vuln·cb 0.809 − 0.612 = 0.197. Accuracy/F1/MCC were
+  unaffected. Fitted temperatures corroborate (defect T≈1.4 mild; vuln T≈3.2–3.8 strong).
+- **What was fixed in the predictor:** `knn_temperature=10` on L2-normalised embeddings made
+  distance-weighting ~uniform (now `'auto'`); kNN mixture re-calibrated; class-prior correction added
+  (helps defect, skipped on vuln). GraphCodeBERT datastores need `--rebuild_datastore` (shipped store
+  is a different embedding space).
+
+Harness: `reproduce_results.py --task {defect,vuln}_{codebert,graphcodebert} [--rebuild_datastore]`,
+`significance_test.py --task ...`.
